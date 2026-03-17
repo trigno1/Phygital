@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ThirdwebProviderWrapper from "@/providers/ThirdwebProviderWrapper";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,10 +24,17 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* ✅ Wrap everything inside ThirdwebProviderWrapper */}
-        <ThirdwebProviderWrapper>{children}</ThirdwebProviderWrapper>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-fuchsia-500 selection:text-white`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          forcedTheme="light"
+          disableTransitionOnChange
+        >
+          {/* ✅ Wrap everything inside ThirdwebProviderWrapper */}
+          <ThirdwebProviderWrapper>{children}</ThirdwebProviderWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

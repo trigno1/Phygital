@@ -1,5 +1,4 @@
-export {};
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -12,7 +11,7 @@ async function main() {
       description: "Just a sample NFT",
       image: "https://placekitten.com/400/400",
       minted: false,
-    }
+    },
     {
       id: "cm2u3mgoz0008jap9x0xbxnjw",
       name: "Red Hexagon",

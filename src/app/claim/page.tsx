@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { motion } from "framer-motion";
 
 import {
@@ -14,6 +14,7 @@ import {
 
 import { inAppWallet } from "thirdweb/wallets";
 import { client, chain } from "@/app/const/client";
+import { QrCode } from "lucide-react";
 
 interface NFT {
   id: string;
@@ -24,14 +25,14 @@ interface NFT {
   owner?: string;
 }
 
-export default function ClaimPage() {
-const searchParams = useSearchParams();
-let id = searchParams.get("id");
+function ClaimContent() {
+  const searchParams = useSearchParams();
+  let id = searchParams.get("id");
 
-// 🧹 Clean encoded or nested URLs
-if (id?.includes("id=")) {
-  id = id.split("id=")[1];
-}
+  // 🧹 Clean encoded or nested URLs
+  if (id?.includes("id=")) {
+    id = id.split("id=")[1];
+  }
 
   const [nft, setNft] = useState<NFT | null>(null);
   const [loading, setLoading] = useState(true);
@@ -100,7 +101,14 @@ if (id?.includes("id=")) {
     await connect({
       client,
       chain,
-      theme: lightTheme(),
+      theme: lightTheme({
+        colors: {
+          primaryButtonBg: "#a855f7",
+          primaryButtonText: "#ffffff",
+          modalBg: "#faf9f6",
+          borderColor: "#e5e7eb",
+        }
+      }),
       wallets: [inAppWallet()],
     });
   };
@@ -108,27 +116,36 @@ if (id?.includes("id=")) {
   // Loading state
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-        <p>Loading NFT details...</p>
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500 mb-4"></div>
+        <p className="text-stone-500 font-medium">Loading NFT details...</p>
       </div>
     );
   }
 
   if (!nft) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-        <p>{message || "NFT not found"}</p>
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <QrCode className="h-16 w-16 text-stone-300 mb-4" />
+        <p className="text-stone-500 font-medium">{message || "NFT not found"}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white text-center px-4">
+    <div className="flex flex-col items-center text-center w-full max-w-md mx-auto">
       {/* ✅ Modern ConnectButton instead of deprecated ConnectWallet */}
       <ConnectButton
         client={client}
         chain={chain}
-        theme={lightTheme()}
+        theme={lightTheme({
+          colors: {
+            primaryButtonBg: "#a855f7",
+            primaryButtonText: "#ffffff",
+            modalBg: "#faf9f6",
+            borderColor: "#e5e7eb",
+          }
+        })}
         connectModal={{
           size: "compact",
         }}
@@ -138,49 +155,88 @@ if (id?.includes("id=")) {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-8"
+        className="mt-8 glass-card border-white/60 p-8 rounded-3xl w-full flex flex-col items-center shadow-xl"
       >
-        <h1 className="text-3xl font-semibold mb-2">🎉 Claim Your NFT</h1>
-        <h2 className="text-lg mb-6">{nft.name}</h2>
+        <span className="inline-flex items-center rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1 text-sm font-medium text-fuchsia-700 mb-4">
+          🎉 Claim Your NFT
+        </span>
+        <h2 className="text-2xl font-bold text-stone-900 mb-6">{nft.name}</h2>
 
-        <img
-          src={nft.image?.replace("ipfs://", "https://ipfs.io/ipfs/")}
-          alt={nft.name}
-          className="w-60 h-60 rounded-xl shadow-lg mb-4"
-        />
+        <div className="rounded-2xl overflow-hidden ring-4 ring-white shadow-lg mb-6">
+          <img
+            src={nft.image?.replace("ipfs://", "https://ipfs.io/ipfs/")}
+            alt={nft.name}
+            className="w-64 h-64 object-cover"
+          />
+        </div>
 
-        <p className="text-gray-300 max-w-md mb-4">{nft.description}</p>
-        <p className="text-sm text-gray-400">ID: {nft.id}</p>
+        <p className="text-stone-600 mb-6 font-medium leading-relaxed">{nft.description}</p>
+        <div className="bg-stone-100/50 rounded-lg px-4 py-2 mb-4 border border-stone-200">
+          <p className="text-xs text-stone-500 font-mono tracking-wider">ID: {nft.id}</p>
+        </div>
 
-        <p className="mt-2">
-          Status:{" "}
+        <div className="w-full flex items-center justify-center py-2 border-t border-b border-stone-100 mb-6 mt-2">
+          <p className="text-sm font-medium text-stone-600 mr-2">Status:</p>
           {nft.minted ? (
-            <span className="text-green-400">✅ Minted</span>
+            <span className="flex items-center text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full text-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+              Minted
+            </span>
           ) : (
-            <span className="text-yellow-400">🟡 Not Minted</span>
+            <span className="flex items-center text-amber-600 font-semibold bg-amber-50 px-3 py-1 rounded-full text-sm">
+              <span className="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
+              Ready to Claim
+            </span>
           )}
-        </p>
+        </div>
 
         {!nft.minted && (
           <button
             onClick={account ? handleClaim : handleConnect}
             disabled={minting}
-            className={`mt-6 px-6 py-3 text-black font-semibold rounded-xl transition ${
+            className={`w-full py-4 px-6 font-bold rounded-xl transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 ${
               minting
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-yellow-400 hover:bg-yellow-300"
+                ? "bg-stone-200 text-stone-500 cursor-not-allowed"
+                : "bg-fuchsia-600 hover:bg-fuchsia-500 text-white hover:shadow-lg hover:-translate-y-1"
             }`}
           >
             {minting
-              ? "Claiming..."
+              ? "Claiming Asset..."
               : account
-              ? "Claim NFT"
-              : "Connect to Claim"}
+              ? "Claim NFT to Wallet"
+              : "Connect Wallet to Claim"}
           </button>
         )}
 
-        {message && <p className="mt-4 text-sm text-gray-300">{message}</p>}
+        {message && (
+          <div className={`mt-4 p-3 rounded-lg text-sm font-medium w-full ${message.includes('🎉') || message.includes('successfully') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : message.includes('⚠️') || message.includes('❌') ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-stone-100 text-stone-600'}`}>
+            {message}
+          </div>
+        )}
       </motion.div>
+    </div>
+  );
+}
+
+export default function ClaimPage() {
+  return (
+    <div className="min-h-screen bg-stone-50 relative selection:bg-fuchsia-500/30 py-12 px-4 flex flex-col items-center justify-center">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-fuchsia-300/40 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-300/30 blur-[120px]" />
+      </div>
+
+      <div className="relative z-10 w-full">
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500 mb-4"></div>
+            <p className="text-stone-500 font-medium">Preparing space...</p>
+          </div>
+        }>
+          <ClaimContent />
+        </Suspense>
+      </div>
     </div>
   );
 }
