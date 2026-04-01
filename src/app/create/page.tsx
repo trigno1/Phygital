@@ -86,24 +86,29 @@ export default function CreatePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Please use an image under 2MB for direct upload, or paste a URL instead.");
+      return;
+    }
+
     const localPreview = URL.createObjectURL(file);
     setForm((f) => ({ ...f, imageFile: file, imagePreview: localPreview, imageUrl: "" }));
 
-    // Upload to IPFS immediately
     setIsUploading(true);
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (res.ok && data.uri) {
-        setForm((f) => ({ ...f, imageUrl: data.uri }));
-      } else {
-        setError(data.error || "Upload failed — try pasting a URL instead.");
-      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setForm((f) => ({ ...f, imageUrl: base64String }));
+        setIsUploading(false);
+      };
+      reader.onerror = () => {
+        setError("Error reading file locally.");
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
     } catch {
       setError("Upload failed — try pasting a URL instead.");
-    } finally {
       setIsUploading(false);
     }
   };
@@ -190,7 +195,7 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white relative">
+    <div className="flex flex-col min-h-screen bg-white relative">
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50" />
@@ -201,7 +206,7 @@ export default function CreatePage() {
       <header className="relative z-10 border-b border-stone-100 bg-white/70 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors font-medium text-sm">
-            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+            <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
           </Link>
           <div className="flex items-center gap-2 text-stone-900 font-bold text-lg">
             <Image src="/logo.png" alt="Phygital Logo" width={24} height={24} className="rounded" /> Create Drop
@@ -215,7 +220,7 @@ export default function CreatePage() {
         </div>
       </header>
 
-      <main className="relative z-10 max-w-3xl mx-auto px-4 pt-12 pb-24">
+      <main className="flex-1 w-full relative z-10 max-w-3xl mx-auto px-4 pt-12 pb-24">
 
         {/* ── STEP 1: Purpose ── */}
         {step === 1 && (
@@ -482,9 +487,9 @@ export default function CreatePage() {
                     <div className="flex items-start gap-4">
                       <button type="button"
                         onClick={() => setForm({ ...form, isSoulbound: !form.isSoulbound })}
-                        className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-colors ${form.isSoulbound ? "bg-indigo-600" : "bg-stone-200"}`}
+                        className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${form.isSoulbound ? "bg-indigo-600" : "bg-stone-200"}`}
                       >
-                        <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${form.isSoulbound ? "translate-x-7" : "translate-x-1"}`} />
+                        <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${form.isSoulbound ? "translate-x-5" : "translate-x-0"}`} />
                       </button>
                       <div>
                         <p className="text-sm font-semibold text-stone-700 flex items-center gap-2">

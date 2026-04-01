@@ -39,8 +39,7 @@ export function DashboardComponent() {
   });
 
   return (
-    <>
-    <div className="min-h-screen bg-white text-stone-900 relative selection:bg-indigo-500/30">
+    <div className="flex flex-col min-h-screen bg-white text-stone-900 relative selection:bg-indigo-500/30">
       <AutoConnect client={client} />
       
       {/* Background Ambience */}
@@ -68,7 +67,7 @@ export function DashboardComponent() {
                   variant="outline"
                   className="flex items-center text-indigo-600 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 hover:border-indigo-300 transition-all font-semibold shadow-sm"
                 >
-                  <QrCode className="mr-2 h-4 w-4" /> Create QR
+                  <QrCode className="sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Create QR</span>
                 </Button>
               </Link>
               <Button 
@@ -76,7 +75,7 @@ export function DashboardComponent() {
                 variant="outline" 
                 className="flex items-center text-stone-600 border-stone-200 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-medium shadow-sm"
               >
-                <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                <LogOut className="sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
           )}
@@ -84,7 +83,7 @@ export function DashboardComponent() {
       </header>
       
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8 relative z-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto py-8 sm:px-6 lg:px-8 relative z-10">
         <div className="px-4 py-6 sm:px-0">
           {account ? (
             <>
@@ -304,8 +303,7 @@ export function DashboardComponent() {
         </div>
       )}
 
+      <Footer />
     </div>
-    <Footer />
-    </>
   )
 }
