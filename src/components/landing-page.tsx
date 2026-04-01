@@ -155,7 +155,7 @@ export function LandingPage() {
       <main className="flex-1 pt-20">
         
         {/* === HERO SECTION === */}
-        <section className="relative w-full pt-32 pb-24 lg:pt-48 lg:pb-32 flex flex-col items-center justify-center overflow-hidden">
+        <section className="relative w-full pt-20 pb-20 lg:pt-40 lg:pb-32 min-h-[calc(100svh-80px)] flex flex-col items-center justify-center overflow-hidden">
           {/* Subtle grid & gradient background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
           <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-indigo-50/50 to-transparent"></div>
@@ -197,24 +197,24 @@ export function LandingPage() {
         </section>
 
         {/* === LIVE STATS (MOCK) === */}
-        <section className="border-y border-stone-100 bg-white py-12">
+        <section className="border-y border-stone-100 bg-white py-10">
           <div className="container mx-auto px-4 md:px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-stone-100">
-              <div className="flex flex-col space-y-2">
-                <span className="text-4xl font-black text-stone-900">14.2K</span>
-                <span className="text-sm font-bold text-stone-400 uppercase tracking-widest">Total Scans</span>
+              <div className="flex flex-col space-y-1">
+                <span className="text-3xl md:text-4xl font-black text-stone-900">14.2K</span>
+                <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">Total Scans</span>
               </div>
-              <div className="flex flex-col space-y-2">
-                <span className="text-4xl font-black text-stone-900">5,430</span>
-                <span className="text-sm font-bold text-stone-400 uppercase tracking-widest">Active Hunters</span>
+              <div className="flex flex-col space-y-1">
+                <span className="text-3xl md:text-4xl font-black text-stone-900">5,430</span>
+                <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">Active Hunters</span>
               </div>
-              <div className="flex flex-col space-y-2">
-                <span className="text-4xl font-black text-stone-900">$0.00</span>
-                <span className="text-sm font-bold text-stone-400 uppercase tracking-widest">Gas Fees Paid</span>
+              <div className="flex flex-col space-y-1">
+                <span className="text-3xl md:text-4xl font-black text-stone-900">$0.00</span>
+                <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">Gas Fees Paid</span>
               </div>
-              <div className="flex flex-col space-y-2">
-                <span className="text-4xl font-black text-stone-900"><TrendingUp className="inline h-8 w-8 text-emerald-500 mb-1" /></span>
-                <span className="text-sm font-bold text-stone-400 uppercase tracking-widest">On-chain Uptime</span>
+              <div className="flex flex-col space-y-1">
+                <span className="text-3xl md:text-4xl font-black text-emerald-500">99.9%</span>
+                <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">On-chain Uptime</span>
               </div>
             </div>
           </div>

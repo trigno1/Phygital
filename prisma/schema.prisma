@@ -13,12 +13,13 @@ model NFT {
   description String
   minted      Boolean   @default(false)
   image       String
-  attributes  Json?   
   owner       String?
-  qrPath      String?    
-  category    String?
-  issuedAt    DateTime?
-  expiresAt   DateTime?
+  txHash      String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  attributes  Json?
+  qrPath      String?
+  category    String?
+  expiresAt   DateTime?
+  issuedAt    DateTime?
 }
