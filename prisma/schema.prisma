@@ -22,4 +22,9 @@ model NFT {
   category    String?
   expiresAt   DateTime?
   issuedAt    DateTime?
+  maxClaims   Int?
+  claimsCount Int       @default(0)
+  password    String?
+  isSoulbound Boolean   @default(false)
+  externalUrl String?
 }

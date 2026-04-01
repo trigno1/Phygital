@@ -16,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Phygital Experience",
-  description: "Claim your NFT seamlessly using Thirdweb + PostgreSQL",
+  title: "Phygital — Create & Claim Physical NFT Drops",
+  description: "Create NFT drops with a QR code. Scan any Phygital QR in the real world and instantly claim an on-chain NFT to your invisible smart wallet — no crypto experience needed.",
 };
 
 export default function RootLayout({

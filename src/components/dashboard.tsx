@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Wallet, LogOut, CreditCard, QrCode } from "lucide-react"
+import { Wallet, LogOut, CreditCard, QrCode, X, ExternalLink } from "lucide-react"
 import { AutoConnect, ConnectButton, lightTheme, MediaRenderer, useActiveAccount, useActiveWallet, useActiveWalletConnectionStatus, useDisconnect, useReadContract } from 'thirdweb/react'
 import { chain, client } from '@/app/const/client'
 import { contract } from '@/app/contract'
@@ -10,12 +11,15 @@ import { getOwnedNFTs } from 'thirdweb/extensions/erc1155'
 import QRScanner from './QRScanner'
 import { inAppWallet } from "thirdweb/wallets"
 import Link from "next/link"
+import Image from "next/image"
+import { Footer } from "@/components/footer"
 
 export function DashboardComponent() {
   const account = useActiveAccount();
   const status = useActiveWalletConnectionStatus();
   const { disconnect } = useDisconnect();
   const wallet = useActiveWallet();
+  const [selectedNFT, setSelectedNFT] = useState<any | null>(null);
 
   const { data: ownedNFTs, isLoading: isLoadingOwnedNFTs } = useReadContract(
     getOwnedNFTs,
@@ -35,6 +39,7 @@ export function DashboardComponent() {
   });
 
   return (
+    <>
     <div className="min-h-screen bg-white text-stone-900 relative selection:bg-indigo-500/30">
       <AutoConnect client={client} />
       
@@ -50,9 +55,12 @@ export function DashboardComponent() {
       {/* Header */}
       <header className="glass relative z-10 border-b border-stone-100 bg-white/70 backdrop-blur-md">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-stone-900 tracking-tight">
-            Dashboard
-          </h1>
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="Phygital Logo" width={32} height={32} className="rounded-xl shadow-sm" />
+            <h1 className="text-2xl font-extrabold text-stone-900 tracking-tight">
+              Phygital
+            </h1>
+          </Link>
           {account && wallet && (
             <div className="flex items-center gap-3">
               <Link href="/create">
@@ -153,6 +161,7 @@ export function DashboardComponent() {
                       ownedNFTs.map((nft) => (
                         <div 
                           key={nft.id} 
+                          onClick={() => setSelectedNFT(nft)}
                           className="bg-white border border-stone-100 p-3 rounded-2xl shadow-sm flex flex-col items-center hover:-translate-y-2 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 group cursor-pointer"
                         >
                           <div className="rounded-xl overflow-hidden w-full aspect-square relative bg-stone-50">
@@ -238,6 +247,65 @@ export function DashboardComponent() {
           )}
         </div>
       </main>
+
+      {/* NFT Details Modal */}
+      {selectedNFT && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={() => setSelectedNFT(null)} />
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-stone-100">
+              <h3 className="font-bold text-lg text-stone-900">Asset Details</h3>
+              <button onClick={() => setSelectedNFT(null)} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
+                <X className="h-5 w-5 text-stone-500" />
+              </button>
+            </div>
+            {/* Content */}
+            <div className="p-6">
+              <div className="rounded-xl overflow-hidden aspect-square w-full bg-stone-50 mb-6 border border-stone-100">
+                <MediaRenderer
+                  client={client}
+                  src={selectedNFT.metadata.image}
+                  width="100%"
+                  height="100%"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <h4 className="text-xl font-bold text-stone-900 mb-2 truncate" title={selectedNFT.metadata.name}>{selectedNFT.metadata.name}</h4>
+              {selectedNFT.metadata.description && (
+                <p className="text-stone-500 mb-6 text-sm leading-relaxed line-clamp-3" title={selectedNFT.metadata.description}>{selectedNFT.metadata.description}</p>
+              )}
+              
+              <div className="bg-stone-50 rounded-xl p-4 border border-stone-100 flex flex-col gap-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-stone-500">Token ID</span>
+                  <span className="font-mono font-medium text-stone-900">#{selectedNFT.id.toString()}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-stone-500">Network</span>
+                  <span className="font-medium text-stone-900">Base Sepolia</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-stone-500">Standard</span>
+                  <span className="font-medium text-stone-900">ERC-1155</span>
+                </div>
+              </div>
+
+              <a 
+                href={`https://testnets.opensea.io/assets/base-sepolia/0xe5492494c0423394A4a1FaaB6E733C35580F9BF9/${selectedNFT.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-medium transition-colors"
+              >
+                View on OpenSea <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
+    <Footer />
+    </>
   )
 }

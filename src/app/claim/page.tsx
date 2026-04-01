@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 import {
   ConnectButton,
@@ -15,6 +16,7 @@ import {
 import { inAppWallet } from "thirdweb/wallets";
 import { client, chain } from "@/app/const/client";
 import { QrCode, ArrowLeft, AlertTriangle } from "lucide-react";
+import { Footer } from "@/components/footer";
 
 interface NFT {
   id: string;
@@ -302,12 +304,10 @@ export default function ClaimPage() {
             <ArrowLeft className="h-4 w-4" />
             Home
           </Link>
-          <div className="flex items-center gap-2 text-stone-900 font-bold">
-            <div className="p-1.5 bg-indigo-50 rounded-lg">
-              <QrCode className="h-4 w-4 text-indigo-600" />
-            </div>
-            Phygital
-          </div>
+          <Link href="/" className="flex items-center gap-2.5 group hover:opacity-80 transition-opacity">
+            <Image src="/logo.png" alt="Phygital" width={26} height={26} className="rounded-lg shadow-sm" />
+            <span className="font-bold text-stone-900 tracking-tight text-lg">Phygital</span>
+          </Link>
           <div className="w-16" />
         </div>
       </header>
@@ -322,6 +322,7 @@ export default function ClaimPage() {
           <ClaimContent />
         </Suspense>
       </main>
+      <Footer />
     </div>
   );
 }
