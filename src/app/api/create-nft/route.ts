@@ -49,10 +49,12 @@ export async function POST(request: Request) {
       },
     });
 
+    // Determine the base URL dynamically from the request origin
+    const url = new URL(request.url);
+    const origin = process.env.NEXT_PUBLIC_APP_URL || `${url.protocol}//${url.host}`;
+    
     // Generate QR code pointing to /claim?id=<nft.id>
-    const claimUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/claim?id=${nft.id}`;
+    const claimUrl = `${origin}/claim?id=${nft.id}`;
 
     const qrDataUrl = await QRCode.toDataURL(claimUrl, {
       errorCorrectionLevel: "H",

@@ -130,20 +130,21 @@ const QRScanner: React.FC = () => {
             <DialogTitle className="text-stone-900 text-2xl font-bold">Scan Asset</DialogTitle>
             <DialogClose className="text-stone-400 hover:text-stone-700" />
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center p-4">
-            {isScanning ? (
-            <div className="flex flex-col items-center justify-center h-48">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-              <p className="mt-6 text-sm font-medium text-stone-500 tracking-wide">AUTHENTICATING...</p>
+          <div className="flex flex-col items-center justify-center p-4 relative">
+            {/* The QR Scanner region must stay in the DOM to avoid breaking html5-qrcode's stream lifecycle */}
+            <div className="w-full flex flex-col items-center">
+              <div id={qrcodeRegionId} className="w-full max-w-[400px] text-stone-800 rounded-xl overflow-hidden relative">
+                {isScanning && (
+                  <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/70 backdrop-blur-sm rounded-xl">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-200 border-t-indigo-600 mb-4"></div>
+                    <p className="text-sm font-bold text-indigo-900 tracking-wide">AUTHENTICATING...</p>
+                  </div>
+                )}
+              </div>
+              <p className="mt-8 text-sm font-medium text-stone-500 text-center">
+                Align the QR code within the frame or upload an image to instantly claim your asset.
+              </p>
             </div>
-            ) : (
-                <div className="w-full flex flex-col items-center">
-                    <div id={qrcodeRegionId} className="w-full max-w-[400px] text-stone-800 rounded-xl"></div>
-                    <p className="mt-8 text-sm font-medium text-stone-500 text-center">
-                      Align the QR code within the frame or upload an image to instantly claim your asset.
-                    </p>
-                </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>
