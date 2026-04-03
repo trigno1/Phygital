@@ -25,6 +25,7 @@ model NFT {
   issuedAt    DateTime?
   maxClaims   Int?
   claimsCount Int       @default(0)
+  scansCount  Int       @default(0)
   password    String?
   isSoulbound Boolean   @default(false)
   externalUrl String?
