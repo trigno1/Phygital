@@ -32,6 +32,7 @@ interface Drop {
   image: string
   category: string | null
   claimsCount: number
+  scansCount: number
   maxClaims: number | null
   minted: boolean
   isSoulbound: boolean
@@ -315,14 +316,22 @@ export function DashboardComponent() {
                               </div>
 
                               {/* Analytics */}
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between text-xs text-stone-500">
-                                  <span className="flex items-center gap-1 font-semibold">
-                                    <Users className="h-3 w-3" /> Claims
-                                  </span>
-                                  <span className="font-bold text-stone-700">
-                                    {drop.claimsCount}{drop.maxClaims ? ` / ${drop.maxClaims}` : ""}
-                                  </span>
+                              <div className="space-y-3">
+                                <div className="grid grid-cols-3 gap-2 text-center">
+                                  <div className="bg-stone-50 rounded-lg py-2 border border-stone-100">
+                                    <p className="text-[10px] uppercase font-bold text-stone-400 mb-0.5">Scans</p>
+                                    <p className="text-sm font-bold text-stone-800">{drop.scansCount || 0}</p>
+                                  </div>
+                                  <div className="bg-stone-50 rounded-lg py-2 border border-stone-100">
+                                    <p className="text-[10px] uppercase font-bold text-stone-400 mb-0.5">Claims</p>
+                                    <p className="text-sm font-bold text-stone-800">{drop.claimsCount}{drop.maxClaims ? `/${drop.maxClaims}` : ""}</p>
+                                  </div>
+                                  <div className="bg-stone-50 rounded-lg py-2 border border-stone-100">
+                                    <p className="text-[10px] uppercase font-bold text-stone-400 mb-0.5">Conversion</p>
+                                    <p className="text-sm font-bold text-indigo-600">
+                                      {drop.scansCount > 0 ? Math.round((drop.claimsCount / drop.scansCount) * 100) : 0}%
+                                    </p>
+                                  </div>
                                 </div>
                                 {progress !== null && (
                                   <div className="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">

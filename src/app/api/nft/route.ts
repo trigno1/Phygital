@@ -20,6 +20,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "NFT not found" }, { status: 404 });
     }
 
+    // Increment scansCount asynchronously
+    prisma.nFT.update({
+      where: { id },
+      data: { scansCount: { increment: 1 } }
+    }).catch(console.error);
+
     return NextResponse.json({ nft });
   } catch (error) {
     console.error("Database or Server Error:", error);

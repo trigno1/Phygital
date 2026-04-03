@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         image: true,
         category: true,
         claimsCount: true,
+        scansCount: true,
         maxClaims: true,
         minted: true,
         isSoulbound: true,
