@@ -139,6 +139,14 @@ export function DashboardComponent() {
         <div className="px-4 py-6 sm:px-0">
           {account ? (
             <>
+              {/* Greeting */}
+              <div className="mb-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <h2 className="text-3xl font-extrabold text-stone-900 tracking-tight">
+                  Welcome back, <span className="text-indigo-600 font-mono tracking-normal">{account.address.slice(0, 6)}...{account.address.slice(-4)}</span> 👋
+                </h2>
+                <p className="text-stone-500 mt-2 font-medium text-lg">Here's an overview of your Phygital assets.</p>
+              </div>
+
               {/* Stats row */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="col-span-1 md:col-span-2 lg:col-span-2 bg-white/80 backdrop-blur-md border-stone-100 shadow-sm rounded-2xl">
@@ -450,14 +458,24 @@ export function DashboardComponent() {
                   <span className="font-medium text-stone-900">ERC-1155</span>
                 </div>
               </div>
-              <a
-                href={`https://testnets.opensea.io/assets/base-sepolia/0xe5492494c0423394A4a1FaaB6E733C35580F9BF9/${selectedNFT.id}`}
-                target="_blank" rel="noopener noreferrer"
-                className="mt-6 w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-medium transition-colors"
-                onClick={() => toast.info("Opening on OpenSea Testnet...")}
-              >
-                View on OpenSea <ExternalLink className="h-4 w-4" />
-              </a>
+              <div className="flex flex-col gap-2 mt-6">
+                <a
+                  href={`https://testnets.opensea.io/assets/base-sepolia/0xe5492494c0423394A4a1FaaB6E733C35580F9BF9/${selectedNFT.id}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-medium transition-colors"
+                  onClick={() => toast.info("Opening on OpenSea Testnet...")}
+                >
+                  View on OpenSea <ExternalLink className="h-4 w-4" />
+                </a>
+                <a
+                  href={`https://sepolia.basescan.org/token/0xe5492494c0423394A4a1FaaB6E733C35580F9BF9?a=${selectedNFT.id}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 py-3 px-4 rounded-xl font-medium transition-colors"
+                  onClick={() => toast.info("Opening BaseScan...")}
+                >
+                  Verify on BaseScan <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
