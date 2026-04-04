@@ -1,15 +1,12 @@
-import { createThirdwebClient, getContract } from "thirdweb";
+import { createThirdwebClient, prepareTransaction, sendTransaction } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
-import { name } from "thirdweb/extensions/common";
-import { getWalletBalance } from "thirdweb/wallets";
-import { privateKeyToAccount } from "thirdweb/wallets";
+import { privateKeyToAccount, getWalletBalance } from "thirdweb/wallets";
 
 async function main() {
   const secretKey = process.env.THIRDWEB_API_SECRET_KEY;
   const privateKey = process.env.THIRDWEB_ADMIN_PRIVATE_KEY;
-  const contractAddress = process.env.NFT_CONTRACT_ADDRESS;
 
-  if (!secretKey || !privateKey || !contractAddress) {
+  if (!secretKey || !privateKey) {
     console.error("Missing environment variables in .env");
     return;
   }
@@ -17,37 +14,40 @@ async function main() {
   try {
     const client = createThirdwebClient({ secretKey });
     const account = privateKeyToAccount({ client, privateKey });
-    const contract = getContract({
-      client,
-      chain: baseSepolia,
-      address: contractAddress as `0x${string}`,
-    });
 
-    console.log("--- Thirdweb Connectivity Test ---");
-    console.log("Testing Secret Key...");
-    const contractName = await name({ contract });
-    console.log("✅ Secret Key is valid. Contract Name:", contractName);
-
-    console.log("\nTesting Wallet Balance...");
-    const balance = await getWalletBalance({
-      client,
-      chain: baseSepolia,
-      address: account.address,
-    });
+    console.log("--- Thirdweb Write Permission Test ---");
     console.log(`Address: ${account.address}`);
-    console.log(`Balance: ${balance.displayValue} ${balance.symbol}`);
     
-    if (parseFloat(balance.displayValue) < 0.001) {
-        console.warn("⚠️  LOW BALANCE: Your admin wallet might not have enough gas to mint NFTs.");
-    } else {
-        console.log("✅ Balance looks sufficient for gas.");
+    // Check balance first
+    const balance = await getWalletBalance({ client, chain: baseSepolia, address: account.address });
+    console.log(`Current Balance: ${balance.displayValue} ${balance.symbol}`);
+
+    if (parseFloat(balance.displayValue) === 0) {
+        console.error("❌ FAILED: Wallet has 0 balance. Please add funds for gas.");
+        return;
     }
+
+    console.log("\nAttempting to send a test transaction (0 ETH to self)...");
+    console.log("This tests if the Secret Key is authorized for RPC write operations.");
+
+    const transaction = prepareTransaction({
+      to: account.address,
+      chain: baseSepolia,
+      client: client,
+      value: BigInt(0),
+    });
+
+    const sentTx = await sendTransaction({ transaction, account });
+    console.log("✅ SUCCESS! Transaction sent.");
+    console.log("Hash:", sentTx.transactionHash);
 
   } catch (error: any) {
     console.error("\n❌ TEST FAILED");
     console.error("Message:", error.message || error);
-    if (error.message?.includes("Unauthorized") || error.message?.includes("401")) {
-        console.error("Reason: The THIRDWEB_API_SECRET_KEY in your .env is invalid or doesn't have permissions.");
+    
+    if (error.message?.includes("Unauthorized") || error.message?.includes("401") || error.message?.includes("permission")) {
+        console.error("\nCRITICAL: Your Thirdweb Secret Key is NOT authorized for this service.");
+        console.error("Go to Thirdweb Dashboard -> API Keys -> [Your Key] -> Check if 'RPC' and 'Base Sepolia' are enabled/allowed.");
     }
   }
 }
