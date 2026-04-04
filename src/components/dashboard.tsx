@@ -186,9 +186,33 @@ export function DashboardComponent() {
                   </Card>
 
                   <div className="col-span-2 lg:col-span-1 flex items-stretch">
-                    <div className="w-full bg-indigo-50/50 border border-indigo-100 rounded-2xl flex items-center justify-center p-4 hover:bg-indigo-50 transition-all duration-300">
-                      <QRScanner />
-                    </div>
+                    <QRScanner trigger={
+                      <div className="w-full h-full bg-indigo-600 rounded-3xl p-6 flex flex-col items-start justify-between relative overflow-hidden group shadow-xl shadow-indigo-100 hover:shadow-indigo-200 transition-all duration-500">
+                        {/* Decorative Background Elements */}
+                        <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                        <div className="absolute bottom-[-10%] left-[-10%] w-24 h-24 bg-indigo-400/20 rounded-full blur-xl animate-pulse" />
+                        
+                        <div className="relative z-10 p-2 bg-white/20 rounded-2xl backdrop-blur-md mb-2 group-hover:rotate-12 transition-transform duration-500">
+                          <QrCode className="h-6 w-6 text-white" />
+                        </div>
+                        
+                        <div className="relative z-10 w-full mt-auto">
+                          <h3 className="text-white font-black text-xl tracking-tight leading-tight mb-1 group-hover:translate-x-1 transition-transform">
+                            Scan Asset
+                          </h3>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-white/70 text-[10px] font-bold uppercase tracking-widest">Instant Auth</span>
+                            <div className="h-1 w-8 bg-white/40 rounded-full overflow-hidden">
+                              <div className="h-full bg-white w-1/3 animate-shimmer" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Animated Border/Glint */}
+                        <div className="absolute inset-0 border border-white/20 rounded-3xl" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                      </div>
+                    } />
                   </div>
                 </div>
               </div>
@@ -256,7 +280,20 @@ export function DashboardComponent() {
                           <p className="text-base text-stone-500 text-center max-w-md mb-8 leading-relaxed">
                             Your smart wallet is empty. Scan a physical Phygital QR code to instantly mint a digital asset.
                           </p>
-                          <div className="w-full max-w-sm px-4"><QRScanner /></div>
+                          <div className="w-full max-w-sm px-4">
+                            <QRScanner trigger={
+                              <div className="w-full bg-indigo-600 rounded-2xl p-5 flex items-center gap-4 relative overflow-hidden group shadow-lg hover:shadow-indigo-200 transition-all duration-300">
+                                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md relative z-10">
+                                  <QrCode className="h-5 w-5 text-white" />
+                                </div>
+                                <div className="text-left relative z-10">
+                                  <h3 className="text-white font-bold text-sm tracking-tight">Launch Scanner</h3>
+                                  <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Connect Physical Asset</p>
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+                              </div>
+                            } />
+                          </div>
                         </div>
                       )
                     ) : (

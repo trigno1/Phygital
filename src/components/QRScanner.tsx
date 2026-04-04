@@ -22,7 +22,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const QRScanner: React.FC = () => {
+interface QRScannerProps {
+  trigger?: React.ReactNode;
+}
+
+const QRScanner: React.FC<QRScannerProps> = ({ trigger }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'camera' | 'file'>('camera');
@@ -117,13 +121,18 @@ const QRScanner: React.FC = () => {
 
   return (
     <>
-      <Button 
-        onClick={() => setOpen(true)} 
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3"
-      >
-        <QrCode className="w-5 h-5" />
-        Scan Phygital Asset
-      </Button>
+      <div onClick={() => setOpen(true)} className="cursor-pointer">
+        {trigger ? (
+          trigger
+        ) : (
+          <Button 
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3"
+          >
+            <QrCode className="w-5 h-5" />
+            Scan Phygital Asset
+          </Button>
+        )}
+      </div>
 
       <Dialog open={open} onOpenChange={(val) => {
         setOpen(val);
