@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
+import { verifyAuth } from "@/lib/auth-helper";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,10 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
+
+    // Secure Verification: Ensure the request is authorized by the wallet owner
+    const auth = await verifyAuth(request, creatorAddress);
+    if (!auth.isValid) return auth.response!;
 
     // Create the NFT record in the database
     const nft = await prisma.nFT.create({

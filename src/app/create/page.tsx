@@ -145,13 +145,26 @@ export default function CreatePage() {
     setIsSubmitting(true);
 
     try {
+      if (!account) {
+        setError("Please connect your wallet to create a drop.");
+        return;
+      }
+
       const validAttrs = form.attributes
         .filter((a) => a.key.trim() && a.value.trim())
         .reduce((acc, a) => ({ ...acc, [a.key.trim()]: a.value.trim() }), {});
 
+      // Secure Verification: Request a one-time signature to authorize creation
+      const message = `Authorize Phygital Access for ${account.address}`;
+      const signature = await account.signMessage({ message });
+
       const res = await fetch("/api/create-nft", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "x-signature": signature,
+          "x-address": account.address,
+        },
         body: JSON.stringify({
           name: form.name,
           description: form.description,
@@ -160,11 +173,11 @@ export default function CreatePage() {
           issuedAt: form.issuedAt || undefined,
           expiresAt: form.expiresAt || undefined,
           attributes: Object.keys(validAttrs).length > 0 ? validAttrs : undefined,
-          maxClaims: form.maxClaims ? parseInt(form.maxClaims) : undefined,
+          maxClaims: form.maxClaims ? parseInt(form.maxClaims, 10) : undefined,
           password: form.password || undefined,
           isSoulbound: form.isSoulbound,
           externalUrl: form.externalUrl || undefined,
-          creatorAddress: account?.address || undefined,
+          creatorAddress: account.address,
         }),
       });
       const data = await res.json();
@@ -176,8 +189,9 @@ export default function CreatePage() {
         setError(data.message || "Something went wrong.");
         toast.error("Failed to create drop", { description: data.message });
       }
-    } catch {
-      setError("Network error. Please try again.");
+    } catch (err) {
+      console.error(err);
+      setError("Authorization or Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

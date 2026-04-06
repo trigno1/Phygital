@@ -63,7 +63,15 @@ export function DashboardComponent() {
     if (!account?.address) return
     setDropsLoading(true)
     try {
-      const res = await fetch(`/api/my-drops?address=${account.address}`)
+      const message = `Authorize Phygital Access for ${account.address}`
+      const signature = await account.signMessage({ message })
+
+      const res = await fetch(`/api/my-drops?address=${account.address}`, {
+        headers: {
+          "x-signature": signature,
+          "x-address": account.address,
+        },
+      })
       const data = await res.json()
       if (res.ok) setMyDrops(data.drops)
     } catch {

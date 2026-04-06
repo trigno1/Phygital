@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
+import { verifyAuth } from "@/lib/auth-helper";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,10 @@ export async function GET(request: Request) {
       });
     }
 
+    // Secure Verification: Ensure the request is authorized by the wallet owner
+    const auth = await verifyAuth(request, address);
+    if (!auth.isValid) return auth.response!;
+
     const drops = await prisma.nFT.findMany({
       where: { creatorAddress: address },
       orderBy: { createdAt: "desc" },
@@ -31,8 +36,6 @@ export async function GET(request: Request) {
         maxClaims: true,
         minted: true,
         isSoulbound: true,
-        password: true,
-        expiresAt: true,
         issuedAt: true,
         createdAt: true,
       },
