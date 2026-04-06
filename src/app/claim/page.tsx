@@ -17,6 +17,7 @@ import { inAppWallet } from "thirdweb/wallets";
 import { client, chain } from "@/app/const/client";
 import { QrCode, ArrowLeft, AlertTriangle, Check, Sparkles, Twitter } from "lucide-react";
 import { Footer } from "@/components/footer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface NFT {
   id: string;
@@ -141,9 +142,35 @@ function ClaimContent() {
   // Loading state
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mb-6"></div>
-        <p className="text-stone-500 font-medium tracking-wide">Loading NFT details...</p>
+      <div className="flex flex-col items-center w-full max-w-md mx-auto px-4">
+        {/* Wallet connect skeleton */}
+        <div className="w-full mb-8 flex justify-center">
+          <Skeleton className="h-10 w-48 rounded-lg" />
+        </div>
+
+        <div className="w-full bg-white border border-stone-100 shadow-xl rounded-3xl overflow-hidden flex flex-col">
+          <div className="w-full bg-indigo-50/50 border-b border-indigo-100 px-6 py-2.5">
+            <Skeleton className="h-3 w-20 rounded" />
+          </div>
+          <div className="w-full aspect-square">
+            <Skeleton className="w-full h-full" />
+          </div>
+          <div className="p-6 w-full flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-8 w-1/2 rounded" />
+              <Skeleton className="h-6 w-24 rounded-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full rounded" />
+              <Skeleton className="h-4 w-5/6 rounded" />
+            </div>
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              <Skeleton className="h-14 rounded-xl" />
+              <Skeleton className="h-14 rounded-xl" />
+            </div>
+            <Skeleton className="h-14 w-full rounded-2xl mt-2" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -354,9 +381,20 @@ export default function ClaimPage() {
 
       <main className="flex-1 w-full relative z-10 max-w-2xl mx-auto py-10 px-4">
         <Suspense fallback={
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mb-6"></div>
-            <p className="text-stone-500 font-medium">Preparing...</p>
+          <div className="flex flex-col items-center w-full max-w-md mx-auto px-4">
+            <div className="w-full mb-8 flex justify-center">
+              <Skeleton className="h-10 w-48 rounded-lg" />
+            </div>
+            <div className="w-full bg-white border border-stone-100 shadow-xl rounded-3xl overflow-hidden flex flex-col">
+              <div className="w-full aspect-square">
+                <Skeleton className="w-full h-full" />
+              </div>
+              <div className="p-6 w-full flex flex-col gap-4">
+                <Skeleton className="h-8 w-1/2 rounded" />
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-14 w-full rounded-2xl mt-4" />
+              </div>
+            </div>
           </div>
         }>
           <ClaimContent />

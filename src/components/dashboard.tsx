@@ -22,6 +22,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Footer } from "@/components/footer"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type Tab = "collected" | "drops"
 
@@ -299,11 +300,11 @@ export function DashboardComponent() {
                     ) : (
                       <>
                         {[1, 2, 3, 4, 5].map((i) => (
-                          <div key={i} className="bg-white border border-stone-100 p-3 rounded-2xl shadow-sm flex flex-col items-center animate-pulse">
-                            <div className="rounded-xl w-full aspect-square bg-stone-200 mb-4" />
+                          <div key={i} className="bg-white border border-stone-100 p-3 rounded-2xl shadow-sm flex flex-col items-center">
+                            <Skeleton className="rounded-xl w-full aspect-square mb-4" />
                             <div className="w-full text-left px-1 flex flex-col gap-2">
-                              <div className="h-3 bg-stone-200 rounded w-1/3" />
-                              <div className="h-4 bg-stone-200 rounded w-3/4" />
+                              <Skeleton className="h-3 w-1/3" />
+                              <Skeleton className="h-4 w-3/4" />
                             </div>
                           </div>
                         ))}
@@ -318,19 +319,19 @@ export function DashboardComponent() {
                     {dropsLoading ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 w-full">
                         {[1, 2, 3].map((i) => (
-                          <div key={i} className="bg-white border border-stone-100 rounded-2xl shadow-sm p-5 flex flex-col gap-4 animate-pulse">
+                          <div key={i} className="bg-white border border-stone-100 rounded-2xl shadow-sm p-5 flex flex-col gap-4">
                             <div className="flex items-start gap-4">
-                              <div className="w-16 h-16 rounded-xl bg-stone-200 flex-shrink-0" />
+                              <Skeleton className="w-16 h-16 rounded-xl flex-shrink-0" />
                               <div className="flex-1 flex flex-col gap-2">
-                                <div className="h-4 bg-stone-200 rounded w-1/2" />
-                                <div className="h-3 bg-stone-200 rounded w-full" />
-                                <div className="h-3 bg-stone-200 rounded w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                                <Skeleton className="h-3 w-full" />
+                                <Skeleton className="h-3 w-3/4" />
                               </div>
                             </div>
                             <div className="grid grid-cols-3 gap-2 mt-2">
-                              <div className="bg-stone-50 rounded-lg h-12 border border-stone-100" />
-                              <div className="bg-stone-50 rounded-lg h-12 border border-stone-100" />
-                              <div className="bg-stone-50 rounded-lg h-12 border border-stone-100" />
+                              <Skeleton className="h-12 rounded-lg" />
+                              <Skeleton className="h-12 rounded-lg" />
+                              <Skeleton className="h-12 rounded-lg" />
                             </div>
                           </div>
                         ))}
