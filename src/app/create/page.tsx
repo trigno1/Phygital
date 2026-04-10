@@ -363,9 +363,9 @@ export default function CreatePage() {
                   <div className="flex items-center justify-between p-3 md:p-4 border-2 border-indigo-500 bg-indigo-50/40 rounded-xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
                     <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-full bg-[#0052FF] flex flex-shrink-0 items-center justify-center text-white font-bold text-sm shadow-inner overflow-hidden">
-                         <img src="https://cryptologos.cc/logos/base-logo.png?v=029" className="w-full h-full object-cover scale-[1.3] brightness-[1.5]" alt="Base" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                       </div>
+                        <div className="w-10 h-10 rounded-full bg-blue-50 flex flex-shrink-0 items-center justify-center shadow-inner overflow-hidden border border-blue-100">
+                          <img src="/networks/base.png" className="w-6 h-6 object-contain" alt="Base" />
+                        </div>
                        <div>
                          <p className="font-bold text-stone-900 text-sm">Base Sepolia</p>
                          <p className="text-xs text-stone-500 font-medium">Testnet • Currently Active</p>
@@ -377,19 +377,22 @@ export default function CreatePage() {
                   <div className="flex items-center justify-between p-3 md:p-4 border border-stone-200 bg-stone-50/80 rounded-xl opacity-70 cursor-not-allowed cursor-help" title="Mainnet deployment is currently in beta testing">
                     <div className="flex items-center gap-3">
                        <div className="flex -space-x-2">
-                         <div className="w-8 h-8 rounded-full bg-[#627EEA] ring-2 ring-white flex items-center justify-center z-30 shadow-sm overflow-hidden p-[7px] border border-stone-100">
-                           <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=029" alt="Ethereum" className="w-full h-full object-contain brightness-0 invert" />
+                         <div className="w-8 h-8 rounded-full bg-white ring-2 ring-white flex items-center justify-center z-40 shadow-sm overflow-hidden p-1 border border-stone-100">
+                           <img src="/networks/eth.png" alt="Ethereum" className="w-full h-full object-contain" />
                          </div>
-                         <div className="w-8 h-8 rounded-full bg-[#8247E5] ring-2 ring-white flex items-center justify-center z-20 shadow-sm overflow-hidden p-1 border border-stone-100">
-                           <img src="https://cryptologos.cc/logos/polygon-matic-logo.svg?v=029" alt="Polygon" className="w-full h-full object-contain brightness-0 invert" />
+                         <div className="w-8 h-8 rounded-full bg-white ring-2 ring-white flex items-center justify-center z-30 shadow-sm overflow-hidden p-1 border border-stone-100">
+                           <img src="/networks/sol.png" alt="Solana" className="w-full h-full object-contain" />
                          </div>
-                         <div className="w-8 h-8 rounded-full bg-black ring-2 ring-white flex items-center justify-center z-10 shadow-sm overflow-hidden p-[7px] border border-stone-100">
-                           <img src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=029" alt="Solana" className="w-full h-full object-contain" />
+                         <div className="w-8 h-8 rounded-full bg-white ring-2 ring-white flex items-center justify-center z-20 shadow-sm overflow-hidden p-1 border border-stone-100">
+                           <img src="/networks/bnb.png" alt="BNB" className="w-full h-full object-contain" />
+                         </div>
+                         <div className="w-8 h-8 rounded-full bg-white ring-2 ring-white flex items-center justify-center z-10 shadow-sm overflow-hidden p-1 border border-stone-100">
+                           <img src="/networks/polygon.png" alt="Polygon" className="w-full h-full object-contain" />
                          </div>
                        </div>
                        <div className="ml-3">
                          <p className="font-bold text-stone-900 text-sm flex items-center gap-2">Mainnets <span className="bg-amber-100 text-amber-700 text-[9px] uppercase px-1.5 py-0.5 rounded font-black tracking-wider border border-amber-200">In Testing</span></p>
-                         <p className="text-xs text-stone-500 font-medium leading-tight mt-0.5">Ethereum, Polygon, Solana, Base</p>
+                         <p className="text-xs text-stone-500 font-medium leading-tight mt-0.5">Ethereum, Solana, BNB, Polygon, Base</p>
                        </div>
                     </div>
                     <Lock className="h-4 w-4 text-stone-400" />
