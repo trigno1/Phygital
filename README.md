@@ -32,7 +32,7 @@ We have chosen a high-performance stack optimized for scalability, developer vel
 | **Framework** | [Next.js 14](https://nextjs.org/) (App Router) | Core application architecture & SSR |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe development |
 | **Web3 / Wallets** | [Thirdweb SDK v5](https://thirdweb.com/) | Smart wallet & Contract interaction |
-| **Database Architecture** | [Prisma](https://www.prisma.io/) + PostgreSQL | Type-safe ORM & Relational storage |
+| **Database Architecture** | [Prisma](https://www.prisma.io/) + MongoDB | Type-safe ORM & Relational cloud storage |
 | **Styling** | [Tailwind CSS](https://tailwindcss.com/) | Utility-first aesthetics |
 | **Animations** | [Framer Motion](https://www.framer.com/motion/) | Premium micro-interactions |
 | **UI Components** | [Radix UI](https://www.radix-ui.com/) | Accessible component primitives |
