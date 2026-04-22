@@ -23,6 +23,7 @@ import Image from "next/image"
 import { Footer } from "@/components/footer"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
+import { motion } from "framer-motion"
 
 type Tab = "collected" | "drops"
 
@@ -137,135 +138,157 @@ export function DashboardComponent() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-stone-900 relative selection:bg-indigo-500/30">
+    <div className="flex flex-col min-h-screen bg-[#f8f9ff] text-black relative selection:bg-indigo-500/30" style={{ fontFamily: "Inter, sans-serif" }}>
       <AutoConnect client={client} />
 
-      {/* Background Ambience */}
+      {/* Background Ambience — matching landing page */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-200/40 blur-[100px] animate-aurora" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-200/30 blur-[100px] animate-aurora2" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-50" />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-50 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 opacity-70" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-fuchsia-50 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 opacity-50" />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }} />
       </div>
 
-      {/* Header */}
-      <header className="glass relative z-10 border-b border-stone-100 bg-white/70 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Image src="/phygital_ultra_logo.png" alt="Phygital Logo" width={32} height={32} className="object-contain" />
-            <h1 className="text-2xl font-extrabold text-stone-900 tracking-tight">Phygital</h1>
+      {/* Header — monochrome pill style */}
+      <header className="relative z-10 border-b border-black/5 bg-white/60 backdrop-blur-xl">
+        <div className="max-w-[1440px] mx-auto py-3 px-4 sm:px-6 lg:px-10 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-3 group hover:opacity-80 transition-opacity">
+            <div className="relative w-10 h-10 transition-transform duration-500 group-hover:scale-110">
+              <Image src="/phygital_ultra_logo.png" alt="Phygital Logo" width={40} height={40} className="w-full h-full object-contain" />
+            </div>
+            <span className="text-2xl font-black text-black tracking-tighter">Phygital</span>
           </Link>
           {account && wallet && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Link href="/explore">
-                <Button variant="outline" className="flex items-center text-violet-600 border-violet-200 bg-violet-50 hover:bg-violet-100 hover:border-violet-300 transition-all font-semibold shadow-sm">
-                  <Compass className="sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Explore</span>
-                </Button>
+                <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-black/60 hover:text-black bg-black/[0.04] hover:bg-black/[0.08] rounded-full transition-all">
+                  <Compass className="h-4 w-4" /> <span className="hidden sm:inline">Explore</span>
+                </button>
               </Link>
               <Link href="/profile">
-                <Button variant="outline" className="flex items-center text-fuchsia-600 border-fuchsia-200 bg-fuchsia-50 hover:bg-fuchsia-100 hover:border-fuchsia-300 transition-all font-semibold shadow-sm">
-                  <User className="sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Profile</span>
-                </Button>
+                <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-black/60 hover:text-black bg-black/[0.04] hover:bg-black/[0.08] rounded-full transition-all">
+                  <User className="h-4 w-4" /> <span className="hidden sm:inline">Profile</span>
+                </button>
               </Link>
               <Link href="/create">
-                <Button variant="outline" className="flex items-center text-indigo-600 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 hover:border-indigo-300 transition-all font-semibold shadow-sm">
-                  <QrCode className="sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Create QR</span>
-                </Button>
+                <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-black/60 hover:text-black bg-black/[0.04] hover:bg-black/[0.08] rounded-full transition-all">
+                  <QrCode className="h-4 w-4" /> <span className="hidden sm:inline">Create</span>
+                </button>
               </Link>
-              <Button onClick={() => { disconnect(wallet); toast.success("Signed out successfully") }} variant="outline"
-                className="flex items-center text-stone-600 border-stone-200 bg-white hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all font-medium shadow-sm">
-                <LogOut className="sm:mr-2 h-4 w-4" /> <span className="hidden sm:inline">Sign Out</span>
-              </Button>
+              <button onClick={() => { if (wallet) disconnect(wallet); toast.success("Signed out successfully") }}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-black/40 hover:text-red-500 hover:bg-red-50 rounded-full transition-all border border-transparent hover:border-red-100">
+                <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sign Out</span>
+              </button>
             </div>
           )}
         </div>
       </header>
 
       {/* Main */}
-      <main className="flex-1 w-full max-w-7xl mx-auto py-8 sm:px-6 lg:px-8 relative z-10">
-        <div className="px-4 py-6 sm:px-0">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto py-10 px-4 sm:px-6 lg:px-10 relative z-10">
+        <div className="sm:px-0">
           {account ? (
             <>
               {/* Greeting */}
-              <div className="mb-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h2 className="text-3xl font-extrabold text-stone-900 tracking-tight">
-                  Welcome back, <span className="text-indigo-600 font-mono tracking-normal">{account.address.slice(0, 6)}...{account.address.slice(-4)}</span> 👋
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.5 }} 
+                className="mb-10"
+              >
+                <div className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-black/5 border border-black/5 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
+                  <span className="text-[10px] font-black text-black/50 uppercase tracking-[0.2em]">Base Sepolia Network</span>
+                </div>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-black tracking-[-0.04em] leading-[1.05]">
+                  Welcome back,{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-orange-500 font-mono tracking-normal text-3xl sm:text-4xl lg:text-5xl">
+                    {account.address.slice(0, 6)}...{account.address.slice(-4)}
+                  </span>
                 </h2>
-                <p className="text-stone-500 mt-2 font-medium text-lg">Here's an overview of your Phygital assets.</p>
-              </div>
+                <p className="text-black/40 mt-3 font-medium text-lg sm:text-xl max-w-2xl">Here's an overview of your Phygital assets.</p>
+              </motion.div>
 
               {/* Stats row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="col-span-1 md:col-span-2 lg:col-span-2 bg-white/80 backdrop-blur-md border-stone-100 shadow-sm rounded-2xl">
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col items-start space-y-4">
-                      <span className="text-sm font-semibold text-stone-400 uppercase tracking-widest">Connected Wallet</span>
-                      <ConnectButton client={client} theme={customLightTheme} chain={chain} />
-                    </div>
-                  </CardContent>
-                </Card>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.5, delay: 0.1 }} 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+              >
+                {/* Wallet card */}
+                <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white border border-black/5 rounded-[28px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] p-6 sm:p-8">
+                  <span className="text-[10px] font-black text-black/30 uppercase tracking-[0.2em]">Connected Wallet</span>
+                  <div className="mt-4">
+                    <ConnectButton client={client} theme={customLightTheme} chain={chain} />
+                  </div>
+                </div>
 
-                <div className="col-span-1 md:col-span-2 lg:col-span-2 grid grid-cols-2 lg:grid-cols-3 gap-6">
-                  <Card className="bg-white/80 backdrop-blur-md border border-stone-100 shadow-sm rounded-2xl relative overflow-hidden group">
+                <div className="col-span-1 md:col-span-2 lg:col-span-2 grid grid-cols-2 lg:grid-cols-3 gap-5">
+                  {/* Collected NFTs stat */}
+                  <div className="bg-white border border-black/5 rounded-[28px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] p-6 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CardContent className="pt-6 relative z-10">
-                      <div className="flex flex-col items-start space-y-2">
-                        <div className="flex items-center justify-center bg-indigo-50 w-10 h-10 rounded-full mb-2">
-                          <Wallet className="h-5 w-5 text-indigo-600" />
-                        </div>
-                        <span className="text-sm font-medium text-stone-500">Collected NFTs</span>
-                        <span className="text-4xl font-bold text-stone-900 tracking-tight">{ownedNFTs?.length ?? 0}</span>
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-center bg-black/5 w-11 h-11 rounded-2xl mb-4">
+                        <Wallet className="h-5 w-5 text-black/70" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <span className="text-xs font-bold text-black/40 uppercase tracking-wider">Collected</span>
+                      <div className="text-5xl font-black text-black tracking-tight mt-1">{ownedNFTs?.length ?? 0}</div>
+                    </div>
+                  </div>
 
-                  <Card className="bg-white/80 backdrop-blur-md border border-stone-100 shadow-sm rounded-2xl relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CardContent className="pt-6 relative z-10">
-                      <div className="flex flex-col items-start space-y-2">
-                        <div className="flex items-center justify-center bg-blue-50 w-10 h-10 rounded-full mb-2">
-                          <Activity className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <span className="text-sm font-medium text-stone-500">My Drops</span>
-                        <span className="text-4xl font-bold text-stone-900 tracking-tight">{myDrops.length}</span>
+                  {/* My Drops stat */}
+                  <div className="bg-white border border-black/5 rounded-[28px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] p-6 relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-center bg-black/5 w-11 h-11 rounded-2xl mb-4">
+                        <Activity className="h-5 w-5 text-black/70" />
                       </div>
-                    </CardContent>
-                  </Card>
+                      <span className="text-xs font-bold text-black/40 uppercase tracking-wider">Drops</span>
+                      <div className="text-5xl font-black text-black tracking-tight mt-1">{myDrops.length}</div>
+                    </div>
+                  </div>
 
+                  {/* QR Scanner CTA */}
                   <div className="col-span-2 lg:col-span-1 flex items-stretch">
                     <QRScanner trigger={
-                      <div className="w-full h-full bg-indigo-600 rounded-3xl p-6 flex flex-col items-start justify-between relative overflow-hidden group shadow-xl shadow-indigo-100 hover:shadow-indigo-200 transition-all duration-500">
-                        {/* Decorative Background Elements */}
-                        <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
-                        <div className="absolute bottom-[-10%] left-[-10%] w-24 h-24 bg-indigo-400/20 rounded-full blur-xl animate-pulse" />
+                      <div className="w-full h-full bg-black rounded-[28px] p-6 flex flex-col items-start justify-between relative overflow-hidden group shadow-[0_20px_40px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)] transition-all duration-500 hover:scale-[1.02] cursor-pointer">
+                        {/* Decorative */}
+                        <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                        <div className="absolute bottom-[-10%] left-[-10%] w-24 h-24 bg-indigo-500/10 rounded-full blur-xl" />
                         
-                        <div className="relative z-10 p-2 bg-white/20 rounded-2xl backdrop-blur-md mb-2 group-hover:rotate-12 transition-transform duration-500">
+                        <div className="relative z-10 p-2.5 bg-white/10 rounded-2xl backdrop-blur-md mb-2 group-hover:rotate-12 transition-transform duration-500">
                           <QrCode className="h-6 w-6 text-white" />
                         </div>
                         
                         <div className="relative z-10 w-full mt-auto">
-                          <h3 className="text-white font-black text-xl tracking-tight leading-tight mb-1 group-hover:translate-x-1 transition-transform">
+                          <h3 className="text-white font-black text-xl tracking-tight leading-tight mb-1 group-hover:translate-x-1 transition-transform uppercase">
                             Scan Asset
                           </h3>
                           <div className="flex items-center justify-between w-full">
-                            <span className="text-white/70 text-[10px] font-bold uppercase tracking-widest">Instant Auth</span>
-                            <div className="h-1 w-8 bg-white/40 rounded-full overflow-hidden">
+                            <span className="text-white/50 text-[9px] font-black uppercase tracking-[0.2em]">Instant Auth</span>
+                            <div className="h-1 w-8 bg-white/20 rounded-full overflow-hidden">
                               <div className="h-full bg-white w-1/3 animate-shimmer" />
                             </div>
                           </div>
                         </div>
 
-                        {/* Animated Border/Glint */}
-                        <div className="absolute inset-0 border border-white/20 rounded-3xl" />
+                        {/* Animated glint */}
+                        <div className="absolute inset-0 border border-white/10 rounded-[28px]" />
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
                       </div>
                     } />
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* ── TABS ── */}
-              <div className="mt-12">
-                <div className="flex items-center gap-2 mb-8 border-b border-stone-100 pb-0">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.5, delay: 0.2 }} 
+                className="mt-14"
+              >
+                <div className="flex items-center gap-2 mb-8">
                   {([
                     { id: "collected" as Tab, label: "My Collection", icon: Wallet },
                     { id: "drops" as Tab, label: "My Drops", icon: BarChart2 },
@@ -273,21 +296,25 @@ export function DashboardComponent() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-5 py-3 font-semibold text-sm transition-all border-b-2 -mb-px ${
+                      className={`flex items-center gap-2 px-6 py-2.5 font-black text-sm rounded-full transition-all duration-300 ${
                         activeTab === tab.id
-                          ? "border-indigo-600 text-indigo-600"
-                          : "border-transparent text-stone-500 hover:text-stone-800"
+                          ? "bg-black text-white shadow-[0_8px_20px_rgba(0,0,0,0.15)]"
+                          : "text-black/40 hover:text-black hover:bg-black/5"
                       }`}
                     >
                       <tab.icon className="h-4 w-4" />
                       {tab.label}
                       {tab.id === "collected" && ownedNFTs && ownedNFTs.length > 0 && (
-                        <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                        <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                          activeTab === tab.id ? "bg-white/20 text-white" : "bg-black/5 text-black/50"
+                        }`}>
                           {ownedNFTs.length}
                         </span>
                       )}
                       {tab.id === "drops" && myDrops.length > 0 && (
-                        <span className="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                        <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                          activeTab === tab.id ? "bg-white/20 text-white" : "bg-black/5 text-black/50"
+                        }`}>
                           {myDrops.length}
                         </span>
                       )}
@@ -297,44 +324,48 @@ export function DashboardComponent() {
 
                 {/* ── COLLECTED NFTs Panel ── */}
                 {activeTab === "collected" && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ duration: 0.4 }} 
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"
+                  >
                     {!isLoadingOwnedNFTs && ownedNFTs ? (
                       ownedNFTs.length > 0 ? (
                         ownedNFTs.map((nft) => (
                           <div key={nft.id} onClick={() => setSelectedNFT(nft)}
-                            className="bg-white border border-stone-100 p-3 rounded-2xl shadow-sm flex flex-col items-center hover:-translate-y-2 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 group cursor-pointer">
-                            <div className="rounded-xl overflow-hidden w-full aspect-square relative bg-stone-50">
+                            className="bg-white border border-black/5 p-3.5 rounded-[20px] shadow-[0_8px_30px_-8px_rgba(0,0,0,0.06)] flex flex-col items-center hover:scale-[1.03] hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.12)] transition-all duration-300 group cursor-pointer">
+                            <div className="rounded-[14px] overflow-hidden w-full aspect-square relative bg-[#f8f9ff]">
                               <MediaRenderer client={client} src={nft.metadata.image} width='100%' height='100%'
-                                style={{ objectFit: 'cover', borderRadius: '0.75rem' }} />
-                              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                                <p className="text-white text-xs font-medium">View Details →</p>
+                                style={{ objectFit: 'cover', borderRadius: '14px' }} />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                                <p className="text-white text-xs font-black uppercase tracking-wider">View Details →</p>
                               </div>
                             </div>
                             <div className="mt-4 mb-2 w-full text-left px-1">
-                              <span className="text-xs font-semibold text-indigo-500 mb-1 block uppercase tracking-wider">Asset</span>
-                              <h3 className="text-sm font-bold text-stone-800 truncate">{nft.metadata.name}</h3>
+                              <span className="text-[10px] font-black text-black/30 mb-1 block uppercase tracking-[0.15em]">Asset</span>
+                              <h3 className="text-sm font-bold text-black truncate">{nft.metadata.name}</h3>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="col-span-full py-16 flex flex-col items-center justify-center bg-stone-50/50 border border-stone-200 border-dashed rounded-3xl mt-4">
-                          <div className="bg-indigo-100/50 p-5 rounded-full mb-6 relative">
-                            <div className="absolute inset-0 bg-indigo-200 animate-ping rounded-full opacity-20" />
-                            <Wallet className="h-10 w-10 text-indigo-600 relative z-10" />
+                        <div className="col-span-full py-20 flex flex-col items-center justify-center bg-white border border-black/5 rounded-[28px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] mt-4">
+                          <div className="bg-black/5 p-5 rounded-2xl mb-6 relative">
+                            <Wallet className="h-10 w-10 text-black/70 relative z-10" />
                           </div>
-                          <h3 className="text-2xl font-bold text-stone-900 mb-3 tracking-tight">Build your collection now</h3>
-                          <p className="text-base text-stone-500 text-center max-w-md mb-8 leading-relaxed">
+                          <h3 className="text-3xl sm:text-4xl font-black text-black mb-3 tracking-[-0.03em]">Build your collection</h3>
+                          <p className="text-base text-black/40 text-center max-w-md mb-8 leading-relaxed font-medium">
                             Your smart wallet is empty. Scan a physical Phygital QR code to instantly mint a digital asset.
                           </p>
                           <div className="w-full max-w-sm px-4">
                             <QRScanner trigger={
-                              <div className="w-full bg-indigo-600 rounded-2xl p-5 flex items-center gap-4 relative overflow-hidden group shadow-lg hover:shadow-indigo-200 transition-all duration-300">
-                                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-md relative z-10">
+                              <div className="w-full bg-black rounded-[20px] p-5 flex items-center gap-4 relative overflow-hidden group shadow-[0_20px_40px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+                                <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md relative z-10">
                                   <QrCode className="h-5 w-5 text-white" />
                                 </div>
                                 <div className="text-left relative z-10">
-                                  <h3 className="text-white font-bold text-sm tracking-tight">Launch Scanner</h3>
-                                  <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">Connect Physical Asset</p>
+                                  <h3 className="text-white font-black text-sm tracking-tight uppercase">Launch Scanner</h3>
+                                  <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">Connect Physical Asset</p>
                                 </div>
                                 <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
                               </div>
@@ -345,8 +376,8 @@ export function DashboardComponent() {
                     ) : (
                       <>
                         {[1, 2, 3, 4, 5].map((i) => (
-                          <div key={i} className="bg-white border border-stone-100 p-3 rounded-2xl shadow-sm flex flex-col items-center">
-                            <Skeleton className="rounded-xl w-full aspect-square mb-4" />
+                          <div key={i} className="bg-white border border-black/5 p-3.5 rounded-[20px] shadow-sm flex flex-col items-center">
+                            <Skeleton className="rounded-[14px] w-full aspect-square mb-4" />
                             <div className="w-full text-left px-1 flex flex-col gap-2">
                               <Skeleton className="h-3 w-1/3" />
                               <Skeleton className="h-4 w-3/4" />
@@ -355,18 +386,22 @@ export function DashboardComponent() {
                         ))}
                       </>
                     )}
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* ── MY DROPS Panel ── */}
                 {activeTab === "drops" && (
-                  <div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ duration: 0.4 }}
+                  >
                     {dropsLoading ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 w-full">
                         {[1, 2, 3].map((i) => (
-                          <div key={i} className="bg-white border border-stone-100 rounded-2xl shadow-sm p-5 flex flex-col gap-4">
+                          <div key={i} className="bg-white border border-black/5 rounded-[24px] shadow-sm p-6 flex flex-col gap-4">
                             <div className="flex items-start gap-4">
-                              <Skeleton className="w-16 h-16 rounded-xl flex-shrink-0" />
+                              <Skeleton className="w-16 h-16 rounded-2xl flex-shrink-0" />
                               <div className="flex-1 flex flex-col gap-2">
                                 <Skeleton className="h-4 w-1/2" />
                                 <Skeleton className="h-3 w-full" />
@@ -374,26 +409,26 @@ export function DashboardComponent() {
                               </div>
                             </div>
                             <div className="grid grid-cols-3 gap-2 mt-2">
-                              <Skeleton className="h-12 rounded-lg" />
-                              <Skeleton className="h-12 rounded-lg" />
-                              <Skeleton className="h-12 rounded-lg" />
+                              <Skeleton className="h-14 rounded-xl" />
+                              <Skeleton className="h-14 rounded-xl" />
+                              <Skeleton className="h-14 rounded-xl" />
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : myDrops.length === 0 ? (
-                      <div className="py-16 flex flex-col items-center justify-center bg-stone-50/50 border border-stone-200 border-dashed rounded-3xl mt-4 text-center px-4">
-                        <div className="bg-indigo-100/50 p-5 rounded-full mb-6">
-                          <Sparkles className="h-10 w-10 text-indigo-600" />
+                      <div className="py-20 flex flex-col items-center justify-center bg-white border border-black/5 rounded-[28px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06)] mt-4 text-center px-4">
+                        <div className="bg-black/5 p-5 rounded-2xl mb-6">
+                          <Sparkles className="h-10 w-10 text-black/70" />
                         </div>
-                        <h3 className="text-2xl font-bold text-stone-900 mb-3 tracking-tight">No drops yet</h3>
-                        <p className="text-base text-stone-500 max-w-md mb-8 leading-relaxed">
+                        <h3 className="text-3xl sm:text-4xl font-black text-black mb-3 tracking-[-0.03em]">No drops yet</h3>
+                        <p className="text-base text-black/40 max-w-md mb-8 leading-relaxed font-medium">
                           Create your first NFT drop and distribute it as a QR code anywhere in the physical world.
                         </p>
                         <Link href="/create">
-                          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-2xl shadow-md">
-                            <Plus className="mr-2 h-4 w-4" /> Create Your First Drop
-                          </Button>
+                          <button className="group relative px-8 py-4 bg-black text-white font-black rounded-[20px] overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(0,0,0,0.2)] flex items-center gap-2 uppercase tracking-widest text-sm">
+                            <Plus className="h-4 w-4" /> Create Your First Drop
+                          </button>
                         </Link>
                       </div>
                     ) : (
@@ -405,10 +440,10 @@ export function DashboardComponent() {
                             : null
 
                           return (
-                            <div key={drop.id} className="bg-white border border-stone-100 rounded-2xl shadow-sm p-5 flex flex-col gap-4 hover:shadow-lg hover:border-stone-200 transition-all group">
+                            <div key={drop.id} className="bg-white border border-black/5 rounded-[24px] shadow-[0_8px_30px_-8px_rgba(0,0,0,0.06)] p-6 flex flex-col gap-4 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] hover:scale-[1.01] transition-all duration-300 group">
                               {/* Top: image + name */}
                               <div className="flex items-start gap-4">
-                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-stone-50 border border-stone-100 flex-shrink-0">
+                                <div className="w-16 h-16 rounded-2xl overflow-hidden bg-[#f8f9ff] border border-black/5 flex-shrink-0">
                                   <img
                                     src={drop.image?.startsWith("ipfs://")
                                       ? drop.image.replace("ipfs://", "https://ipfs.io/ipfs/")
@@ -419,37 +454,37 @@ export function DashboardComponent() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                                    <h3 className="font-bold text-stone-900 text-sm truncate">{drop.name}</h3>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${status.color}`}>
+                                    <h3 className="font-black text-black text-sm truncate">{drop.name}</h3>
+                                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${status.color}`}>
                                       {status.label}
                                     </span>
                                   </div>
-                                  <p className="text-xs text-stone-400 line-clamp-2">{drop.description}</p>
+                                  <p className="text-xs text-black/30 line-clamp-2 font-medium">{drop.description}</p>
                                 </div>
                               </div>
 
                               {/* Analytics */}
                               <div className="space-y-3">
                                 <div className="grid grid-cols-3 gap-2 text-center">
-                                  <div className="bg-stone-50 rounded-lg py-2 border border-stone-100">
-                                    <p className="text-[10px] uppercase font-bold text-stone-400 mb-0.5">Scans</p>
-                                    <p className="text-sm font-bold text-stone-800">{drop.scansCount || 0}</p>
+                                  <div className="bg-black/[0.03] rounded-xl py-2.5 border border-black/5">
+                                    <p className="text-[9px] uppercase font-black text-black/30 mb-0.5 tracking-wider">Scans</p>
+                                    <p className="text-sm font-black text-black">{drop.scansCount || 0}</p>
                                   </div>
-                                  <div className="bg-stone-50 rounded-lg py-2 border border-stone-100">
-                                    <p className="text-[10px] uppercase font-bold text-stone-400 mb-0.5">Claims</p>
-                                    <p className="text-sm font-bold text-stone-800">{drop.claimsCount}{drop.maxClaims ? `/${drop.maxClaims}` : ""}</p>
+                                  <div className="bg-black/[0.03] rounded-xl py-2.5 border border-black/5">
+                                    <p className="text-[9px] uppercase font-black text-black/30 mb-0.5 tracking-wider">Claims</p>
+                                    <p className="text-sm font-black text-black">{drop.claimsCount}{drop.maxClaims ? `/${drop.maxClaims}` : ""}</p>
                                   </div>
-                                  <div className="bg-stone-50 rounded-lg py-2 border border-stone-100">
-                                    <p className="text-[10px] uppercase font-bold text-stone-400 mb-0.5">Conversion</p>
-                                    <p className="text-sm font-bold text-indigo-600">
+                                  <div className="bg-black/[0.03] rounded-xl py-2.5 border border-black/5">
+                                    <p className="text-[9px] uppercase font-black text-black/30 mb-0.5 tracking-wider">Conversion</p>
+                                    <p className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-fuchsia-600">
                                       {drop.scansCount > 0 ? Math.round((drop.claimsCount / drop.scansCount) * 100) : 0}%
                                     </p>
                                   </div>
                                 </div>
                                 {progress !== null && (
-                                  <div className="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
+                                  <div className="w-full bg-black/5 rounded-full h-1.5 overflow-hidden">
                                     <div
-                                      className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all"
+                                      className="h-full bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-indigo-500 bg-[length:200%_100%] rounded-full transition-all animate-[splash-gradient-shift_3s_linear_infinite]"
                                       style={{ width: `${progress}%` }}
                                     />
                                   </div>
@@ -459,32 +494,32 @@ export function DashboardComponent() {
                               {/* Badges */}
                               <div className="flex flex-wrap gap-1.5">
                                 {drop.isSoulbound && (
-                                  <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                                  <span className="flex items-center gap-1 text-[10px] font-black text-black/50 bg-black/[0.03] border border-black/5 px-2 py-0.5 rounded-full">
                                     <ShieldCheck className="h-2.5 w-2.5" /> Soulbound
                                   </span>
                                 )}
                                 {drop.password && (
-                                  <span className="flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">
+                                  <span className="flex items-center gap-1 text-[10px] font-black text-black/50 bg-black/[0.03] border border-black/5 px-2 py-0.5 rounded-full">
                                     <Lock className="h-2.5 w-2.5" /> Gated
                                   </span>
                                 )}
                                 {drop.category && (
-                                  <span className="text-[10px] font-bold text-stone-500 bg-stone-50 border border-stone-200 px-2 py-0.5 rounded-full capitalize">
+                                  <span className="text-[10px] font-black text-black/40 bg-black/[0.03] border border-black/5 px-2 py-0.5 rounded-full capitalize">
                                     {drop.category}
                                   </span>
                                 )}
                                 {drop.expiresAt && (
-                                  <span className="flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+                                  <span className="flex items-center gap-1 text-[10px] font-black text-black/40 bg-black/[0.03] border border-black/5 px-2 py-0.5 rounded-full">
                                     <Calendar className="h-2.5 w-2.5" /> {new Date(drop.expiresAt).toLocaleDateString()}
                                   </span>
                                 )}
                               </div>
 
                               {/* Actions */}
-                              <div className="flex gap-2 pt-1 border-t border-stone-50">
+                              <div className="flex gap-2 pt-2 border-t border-black/5">
                                 <button
                                   onClick={() => copyClaimLink(drop.id)}
-                                  className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 py-2 rounded-xl transition-all"
+                                  className="flex-1 flex items-center justify-center gap-1.5 text-xs font-black text-black/60 bg-black/[0.03] hover:bg-black/[0.07] border border-black/5 py-2.5 rounded-[14px] transition-all"
                                 >
                                   {copiedId === drop.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                                   {copiedId === drop.id ? "Copied!" : "Copy Link"}
@@ -493,18 +528,18 @@ export function DashboardComponent() {
                                   href={`/claim?id=${drop.id}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold text-stone-600 bg-stone-50 hover:bg-stone-100 border border-stone-200 py-2 rounded-xl transition-all"
+                                  className="flex-1 flex items-center justify-center gap-1.5 text-xs font-black text-black/60 bg-black/[0.03] hover:bg-black/[0.07] border border-black/5 py-2.5 rounded-[14px] transition-all"
                                 >
                                   <ExternalLink className="h-3.5 w-3.5" /> Preview
                                 </a>
                                 <button
                                   onClick={() => downloadQR(drop)}
                                   disabled={qrLoadingId === drop.id}
-                                  className="flex items-center justify-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 border border-emerald-100 py-2 px-3 rounded-xl transition-all disabled:opacity-60"
+                                  className="flex items-center justify-center gap-1 text-xs font-black text-black/60 bg-black/[0.03] hover:bg-black/[0.07] border border-black/5 py-2.5 px-3.5 rounded-[14px] transition-all disabled:opacity-60"
                                   title="Re-download QR Code"
                                 >
                                   {qrLoadingId === drop.id
-                                    ? <span className="animate-spin h-3 w-3 border border-emerald-600 border-t-transparent rounded-full" />
+                                    ? <span className="animate-spin h-3 w-3 border border-black/40 border-t-transparent rounded-full" />
                                     : <Download className="h-3.5 w-3.5" />}
                                 </button>
                               </div>
@@ -513,24 +548,30 @@ export function DashboardComponent() {
                         })}
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             </>
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
               {status === "connecting" ? (
-                <>
-                  <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600" />
-                  <p className="mt-6 text-stone-500 font-medium tracking-wide">Authenticating...</p>
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-center bg-white/80 backdrop-blur-md p-12 rounded-[2rem] border border-stone-100 shadow-xl max-w-md mx-auto">
-                  <div className="bg-indigo-50 p-4 rounded-full mb-6">
-                    <Wallet className="h-12 w-12 text-indigo-600" />
+                <div className="flex flex-col items-center gap-6">
+                  <div className="relative w-16 h-16">
+                    <div className="absolute inset-0 rounded-full border-2 border-black/5" />
+                    <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-black animate-spin" />
                   </div>
-                  <h2 className="text-3xl font-bold text-stone-900 mb-3 tracking-tight">Welcome Back</h2>
-                  <p className="text-stone-500 mb-8 max-w-xs leading-relaxed">Connect your invisible wallet or continue as a guest to access your dashboard.</p>
+                  <p className="text-black/40 font-bold text-sm uppercase tracking-[0.2em]">Authenticating</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center bg-white p-12 sm:p-16 rounded-[28px] border border-black/5 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.08)] max-w-lg mx-auto">
+                  <div className="bg-black/5 p-5 rounded-2xl mb-8">
+                    <Wallet className="h-12 w-12 text-black/70" />
+                  </div>
+                  <h2 className="text-4xl sm:text-5xl font-black text-black mb-4 tracking-[-0.04em]">
+                    Welcome{" "}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-orange-500">Back</span>
+                  </h2>
+                  <p className="text-black/40 mb-10 max-w-sm leading-relaxed font-medium text-base">Connect your invisible wallet or continue as a guest to access your dashboard.</p>
                   <ConnectButton client={client} theme={customLightTheme}
                     wallets={[inAppWallet({ auth: { options: ["google", "email", "passkey", "guest"] } })]} />
                 </div>
@@ -543,41 +584,43 @@ export function DashboardComponent() {
       {/* NFT Details Modal */}
       {selectedNFT && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm" onClick={() => setSelectedNFT(null)} />
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-stone-100">
-              <h3 className="font-bold text-lg text-stone-900">Asset Details</h3>
-              <button onClick={() => setSelectedNFT(null)} className="p-2 hover:bg-stone-100 rounded-full transition-colors">
-                <X className="h-5 w-5 text-stone-500" />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-md" onClick={() => setSelectedNFT(null)} />
+          <div className="bg-white rounded-[28px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] w-full max-w-sm overflow-hidden relative z-10 animate-in fade-in zoom-in-95 duration-200">
+            {/* Gradient header strip */}
+            <div className="h-1.5 bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-orange-500" />
+            <div className="flex items-center justify-between p-5 border-b border-black/5">
+              <h3 className="font-black text-lg text-black tracking-tight">Asset Details</h3>
+              <button onClick={() => setSelectedNFT(null)} className="p-2 hover:bg-black/5 rounded-full transition-colors">
+                <X className="h-5 w-5 text-black/40" />
               </button>
             </div>
             <div className="p-6">
-              <div className="rounded-xl overflow-hidden aspect-square w-full bg-stone-50 mb-6 border border-stone-100">
+              <div className="rounded-[16px] overflow-hidden aspect-square w-full bg-[#f8f9ff] mb-6 border border-black/5">
                 <MediaRenderer client={client} src={selectedNFT.metadata.image} width="100%" height="100%" style={{ objectFit: 'cover' }} />
               </div>
-              <h4 className="text-xl font-bold text-stone-900 mb-2 truncate" title={selectedNFT.metadata.name}>{selectedNFT.metadata.name}</h4>
+              <h4 className="text-xl font-black text-black mb-2 truncate tracking-tight" title={selectedNFT.metadata.name}>{selectedNFT.metadata.name}</h4>
               {selectedNFT.metadata.description && (
-                <p className="text-stone-500 mb-6 text-sm leading-relaxed line-clamp-3">{selectedNFT.metadata.description}</p>
+                <p className="text-black/40 mb-6 text-sm leading-relaxed line-clamp-3 font-medium">{selectedNFT.metadata.description}</p>
               )}
-              <div className="bg-stone-50 rounded-xl p-4 border border-stone-100 flex flex-col gap-3">
+              <div className="bg-black/[0.03] rounded-[16px] p-4 border border-black/5 flex flex-col gap-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-stone-500">Token ID</span>
-                  <span className="font-mono font-medium text-stone-900">#{selectedNFT.id.toString()}</span>
+                  <span className="text-black/40 font-bold">Token ID</span>
+                  <span className="font-mono font-black text-black">#{selectedNFT.id.toString()}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-stone-500">Network</span>
-                  <span className="font-medium text-stone-900">Base Sepolia</span>
+                  <span className="text-black/40 font-bold">Network</span>
+                  <span className="font-black text-black">Base Sepolia</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-stone-500">Standard</span>
-                  <span className="font-medium text-stone-900">ERC-1155</span>
+                  <span className="text-black/40 font-bold">Standard</span>
+                  <span className="font-black text-black">ERC-1155</span>
                 </div>
               </div>
               <div className="flex flex-col gap-2 mt-6">
                 <a
                   href={`https://testnets.opensea.io/assets/base-sepolia/0xe5492494c0423394A4a1FaaB6E733C35580F9BF9/${selectedNFT.id}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-medium transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-black hover:bg-black/90 text-white py-3.5 px-4 rounded-[16px] font-black text-sm transition-all hover:scale-[1.02] active:scale-95 shadow-[0_8px_20px_rgba(0,0,0,0.15)] uppercase tracking-wider"
                   onClick={() => toast.info("Opening on OpenSea Testnet...")}
                 >
                   View on OpenSea <ExternalLink className="h-4 w-4" />
@@ -585,7 +628,7 @@ export function DashboardComponent() {
                 <a
                   href={`https://sepolia.basescan.org/token/0xe5492494c0423394A4a1FaaB6E733C35580F9BF9?a=${selectedNFT.id}`}
                   target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200 py-3 px-4 rounded-xl font-medium transition-colors"
+                  className="w-full flex items-center justify-center gap-2 bg-black/[0.04] hover:bg-black/[0.08] text-black py-3.5 px-4 rounded-[16px] font-black text-sm transition-all border border-black/5 uppercase tracking-wider"
                   onClick={() => toast.info("Opening BaseScan...")}
                 >
                   Verify on BaseScan <ExternalLink className="h-4 w-4" />

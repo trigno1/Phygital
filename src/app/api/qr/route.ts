@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
 import { verifyAuth } from "@/lib/auth-helper";
+import { generateBrandedQR } from "@/lib/branded-qr";
 
 export const dynamic = "force-dynamic";
 
@@ -57,16 +58,20 @@ export async function GET(request: Request) {
       process.env.NEXT_PUBLIC_APP_URL || `${url.protocol}//${url.host}`;
     const claimUrl = `${origin}/claim?id=${nft.id}`;
 
-    const qrDataUrl = await QRCode.toDataURL(claimUrl, {
-      errorCorrectionLevel: "H",
-      type: "image/png",
-      margin: 2,
-      color: {
-        dark: "#1e1b4b",
-        light: "#ffffff",
-      },
-      width: 512,
-    });
+    // Generate branded QR card with logo + NFT name
+    let qrDataUrl: string;
+    try {
+      qrDataUrl = await generateBrandedQR(claimUrl, nft.name);
+    } catch {
+      // Fallback to raw QR if branded generation fails
+      qrDataUrl = await QRCode.toDataURL(claimUrl, {
+        errorCorrectionLevel: "H",
+        type: "image/png",
+        margin: 2,
+        color: { dark: "#1e1b4b", light: "#ffffff" },
+        width: 512,
+      });
+    }
 
     return NextResponse.json({ qrDataUrl, claimUrl });
   } catch (error) {
