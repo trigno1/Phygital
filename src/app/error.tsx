@@ -71,7 +71,7 @@ export default function GlobalError({
 
       {/* Footer Branding */}
       <footer className="py-10 flex justify-center items-center gap-3 relative z-10">
-        <Image src="/logo.png" alt="Phygital" width={24} height={24} className="rounded-lg shadow-sm" />
+        <Image src="/phygital_ultra_logo.png" alt="Phygital" width={24} height={24} className="rounded-lg shadow-sm" />
         <span className="font-bold text-stone-400 tracking-tight text-sm">Phygital Platform</span>
       </footer>
     </div>

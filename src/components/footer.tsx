@@ -30,7 +30,7 @@ export function Footer({ dark = false }: FooterProps) {
         {/* Brand section */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
           <div className="flex items-center gap-3 mb-2">
-            <Image src="/logo.png" alt="Phygital Logo" width={32} height={32} className="object-contain" />
+            <Image src="/phygital_ultra_logo.png" alt="Phygital Logo" width={32} height={32} className="object-contain" />
             <span className={`text-xl font-black tracking-tight ${textTitle}`}>Phygital</span>
           </div>
           <p className={`text-sm font-medium ${textSub}`}>Physical NFT Drops on Base Sepolia</p>

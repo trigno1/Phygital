@@ -229,7 +229,7 @@ export default function CreatePage() {
             <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Back to Dashboard</span>
           </Link>
           <div className="flex items-center gap-2 text-stone-900 font-bold text-lg">
-            <Image src="/logo.png" alt="Phygital Logo" width={24} height={24} className="object-contain" /> Create Drop
+            <Image src="/phygital_ultra_logo.png" alt="Phygital Logo" width={24} height={24} className="object-contain" /> Create Drop
           </div>
           {/* Step indicator */}
           <div className="hidden sm:flex items-center gap-1.5 bg-stone-50 border border-stone-200 p-1.5 rounded-full shadow-inner">

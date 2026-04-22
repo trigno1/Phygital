@@ -151,7 +151,7 @@ export function DashboardComponent() {
       <header className="glass relative z-10 border-b border-stone-100 bg-white/70 backdrop-blur-md">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Image src="/logo.png" alt="Phygital Logo" width={32} height={32} className="object-contain" />
+            <Image src="/phygital_ultra_logo.png" alt="Phygital Logo" width={32} height={32} className="object-contain" />
             <h1 className="text-2xl font-extrabold text-stone-900 tracking-tight">Phygital</h1>
           </Link>
           {account && wallet && (

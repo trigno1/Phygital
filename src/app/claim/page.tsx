@@ -466,7 +466,7 @@ export default function ClaimPage() {
             Home
           </Link>
           <Link href="/" className="flex items-center gap-2.5 group hover:opacity-80 transition-opacity">
-            <Image src="/logo.png" alt="Phygital" width={26} height={26} className="object-contain" />
+            <Image src="/phygital_ultra_logo.png" alt="Phygital" width={26} height={26} className="object-contain" />
             <span className="font-bold text-stone-900 tracking-tight text-lg">Phygital</span>
           </Link>
           <div className="w-16" />

@@ -206,7 +206,7 @@ export default function ProfilePage() {
             <ArrowLeft className="h-4 w-4" /> Dashboard
           </Link>
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <Image src="/logo.png" alt="Phygital Logo" width={28} height={28} className="rounded-xl shadow-sm" />
+            <Image src="/phygital_ultra_logo.png" alt="Phygital Logo" width={28} height={28} className="rounded-xl shadow-sm" />
             <span className="text-xl font-extrabold text-stone-900 tracking-tight">Phygital</span>
           </Link>
           {wallet && (

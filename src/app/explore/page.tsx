@@ -100,7 +100,7 @@ export default function ExplorePage() {
             href="/"
             className="inline-flex items-center gap-2 text-white/40 hover:text-white/80 text-sm font-semibold transition-colors mb-8"
           >
-            <Image src="/logo.png" alt="Phygital" width={20} height={20} className="object-contain" />
+            <Image src="/phygital_ultra_logo.png" alt="Phygital" width={20} height={20} className="object-contain" />
             Phygital
           </Link>
 
