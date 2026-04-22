@@ -604,10 +604,9 @@ function PhygitalFooter({ scroll }: { scroll: (id: string) => void }) {
         <div className="space-y-6">
            <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/30">Developer</h4>
            <div className="flex flex-col gap-4">
-             <a href="https://github.com/tanishsunitapareek" className="text-sm font-bold text-white/50 hover:text-white flex items-center gap-2">GitHub <ExternalLink size={14} /></a>
-             <a href="https://basescan.org" className="text-sm font-bold text-white/50 hover:text-white flex items-center gap-2">BaseScan <ExternalLink size={14} /></a>
-             <Link href="/docs" className="text-sm font-bold text-white/50 hover:text-white">Whitepaper</Link>
-             <Link href="/api" className="text-sm font-bold text-white/50 hover:text-white">API Reference</Link>
+             <a href="https://github.com/trigno1" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-white/50 hover:text-white flex items-center gap-2">GitHub <ExternalLink size={14} /></a>
+             <a href="https://basescan.org" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-white/50 hover:text-white flex items-center gap-2">BaseScan <ExternalLink size={14} /></a>
+             <a href="https://www.linkedin.com/in/tanish-sunita-pareek/" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-white/50 hover:text-white flex items-center gap-2">LinkedIn <ExternalLink size={14} /></a>
            </div>
         </div>
 
