@@ -33,6 +33,10 @@ export function errorResponse({
     console.error(`[${code}] Internal Error Details:`, details);
   }
 
+  // Sanitize details: If it's an Error object, we don't want to leak it in production.
+  // We only want to return details if they are intended for the UI (like { requiresPassword: true }).
+  const safeDetails = (details && !(details instanceof Error)) ? details : undefined;
+
   return NextResponse.json(
     {
       success: false,
@@ -40,6 +44,7 @@ export function errorResponse({
         code,
         message,
         timestamp: new Date().toISOString(),
+        details: safeDetails,
       },
     },
     { status }

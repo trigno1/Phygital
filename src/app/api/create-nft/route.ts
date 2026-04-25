@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
+import bcrypt from "bcryptjs";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
 import { verifyAuth } from "@/lib/auth-helper";
 import { generateBrandedQR } from "@/lib/branded-qr";
@@ -38,6 +39,9 @@ export async function POST(request: Request) {
     const auth = await verifyAuth(request, creatorAddress);
     if (!auth.isValid) return auth.response!;
 
+    // TASK 1: Hash password if provided
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+
     // Create the NFT record in the database
     const nft = await prisma.nFT.create({
       data: {
@@ -49,7 +53,7 @@ export async function POST(request: Request) {
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         attributes: attributes || null,
         maxClaims: maxClaims ? parseInt(maxClaims, 10) : null,
-        password: password || null,
+        password: hashedPassword,
         isSoulbound: isSoulbound ?? false,
         isPublic: isPublic ?? false,
         externalUrl: externalUrl || null,

@@ -42,6 +42,15 @@ export function ClaimNft({ nft }: ClaimNftProps) {
   const [isClaiming, setIsClaiming] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [requiresPassword, setRequiresPassword] = useState(false)
+  const [password, setPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+
+  useEffect(() => {
+    setRequiresPassword(false)
+    setPassword('')
+    setPasswordError('')
+  }, [nft.id])
 
   useEffect(() => {
     if (showConfetti) {
@@ -52,18 +61,36 @@ export function ClaimNft({ nft }: ClaimNftProps) {
 
   const handleClaim = async () => {
     setIsClaiming(true)
+    setPasswordError('')
     try {
       const response = await fetch('/api/claimNFT', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ 
           id: nft.id, 
-          address: account?.address 
+          address: account?.address,
+          password: password || undefined
         }),
       })
       const data = await response.json()
       if (data.success) {
         setShowModal(true)
         setShowConfetti(true)
+      } else if (data.error?.details?.requiresPassword) {
+        setRequiresPassword(true)
+        if (password) {
+          setPasswordError(data.error.message || 'Incorrect password')
+        }
+      } else {
+        // Handle other errors
+        if (data.error?.message) {
+          setPasswordError(data.error.message)
+        } else if (data.message) {
+          // Fallback for older API routes not yet using standardized errorResponse
+          setPasswordError(data.message)
+        }
       }
     } catch (error) {
       console.error(error)
@@ -160,6 +187,28 @@ export function ClaimNft({ nft }: ClaimNftProps) {
           )}
 
           <div className="w-full mt-auto pt-4 border-t border-stone-100">
+            {requiresPassword && !nft.minted && (
+              <div className="mb-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1.5 block">
+                  Secret Claim Code
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setPasswordError('')
+                  }}
+                  placeholder="Enter code to claim"
+                  className={`w-full px-4 py-3.5 rounded-xl border ${passwordError ? 'border-red-500 bg-red-50/30' : 'border-stone-200 bg-stone-50'} focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium`}
+                />
+                {passwordError && (
+                  <p className="text-red-500 text-[11px] font-bold mt-1.5 flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-red-500" /> {passwordError}
+                  </p>
+                )}
+              </div>
+            )}
             {nft.minted ? (
               <Button disabled className="w-full py-6 text-lg rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200">
                 <Check className="mr-2 h-5 w-5" /> Already Claimed

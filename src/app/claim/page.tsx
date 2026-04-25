@@ -70,6 +70,12 @@ function ClaimContent() {
       return;
     }
 
+    // TASK 4: Fire-and-forget scan tracking
+    fetch("/api/scan", {
+      method: "POST",
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+
     async function fetchNFT() {
       try {
         const res = await fetch(`/api/nft?id=${id}`);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 import {
   createThirdwebClient,
   getContract,
@@ -65,7 +66,8 @@ export async function POST(request: Request) {
           details: { requiresPassword: true },
         });
       }
-      if (password !== existing.password) {
+      const match = await bcrypt.compare(password, existing.password);
+      if (!match) {
         return errorResponse({
           code: ErrorCode.UNAUTHORIZED,
           message: "Incorrect secret code",
