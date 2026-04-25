@@ -1,34 +1,22 @@
-<div align="center">
-  <img src="./public/logo.png" alt="Phygital Logo" width="100" />
+# Phygital — Physical NFT Drops Platform
 
-  <h1>Phygital — Physical NFT Drops Platform</h1>
-  <p><b>Turn any physical object into an on-chain NFT. Scan a QR. Claim in seconds. Zero crypto knowledge required.</b></p>
+![Phygital Logo](./public/logo.png)
 
-  <br/>
+**Turn any physical object into an on-chain NFT. Scan a QR. Claim in seconds. Zero crypto knowledge required.**
 
-  [![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://vercel.com)
-  [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  [![Thirdweb](https://img.shields.io/badge/Thirdweb-v5-7C3AED?style=flat-square)](https://thirdweb.com)
-  [![Network](https://img.shields.io/badge/Base%20Sepolia-Testnet-0052FF?style=flat-square&logo=coinbase)](https://base.org)
-  [![ERC-1155](https://img.shields.io/badge/Token-ERC--1155-627EEA?style=flat-square&logo=ethereum&logoColor=white)](https://eips.ethereum.org/EIPS/eip-1155)
-  [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](./LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://vercel.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Thirdweb](https://img.shields.io/badge/Thirdweb-v5-7C3AED?style=flat-square)](https://thirdweb.com)
+[![Network](https://img.shields.io/badge/Base%20Sepolia-Testnet-0052FF?style=flat-square&logo=coinbase)](https://base.org)
+[![ERC-1155](https://img.shields.io/badge/Token-ERC--1155-627EEA?style=flat-square&logo=ethereum&logoColor=white)](https://eips.ethereum.org/EIPS/eip-1155)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](./LICENSE)
 
-  <br/>
-
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-contributing">Contributing</a>
-
-</div>
-
-<br/>
+[Quick Start](#quick-start) • [Features](#features) • [Architecture](#architecture) • [Tech Stack](#tech-stack) • [Contributing](#contributing)
 
 ---
 
-## 📸 How It Works
+## How It Works
 
 **🎨 Creator** &nbsp;→&nbsp; Upload image, set traits, generate QR, print & share
 
@@ -40,19 +28,21 @@
 
 ---
 
-## ✨ Features
+## Features
 
 ### For Collectors
+
 | Feature | Description |
-|:---|:---|
+| :--- | :--- |
 | 📷 **Instant QR Claiming** | Scan any Phygital QR with your phone camera — no app required |
 | 🔐 **Invisible Smart Wallets** | Sign in with Google, email, or passkey — a self-custody wallet is created silently in the background |
 | ⚡ **Zero Gas Fees** | All transaction costs are sponsored by the platform's backend wallet |
 | 🎉 **Confetti & Animations** | Premium claim experience with micro-animations and real-time transaction feedback |
 
 ### For Creators
+
 | Feature | Description |
-|:---|:---|
+| :--- | :--- |
 | 🖼️ **IPFS Image Upload** | Upload artwork directly — stored permanently and immutably on the decentralized web |
 | 🏷️ **Custom Attributes** | Add unlimited key-value traits (e.g., `Rarity: Legendary`, `Event: TechConf 2026`) visible on marketplaces |
 | 👥 **Claim Limits** | Set a max number of unique wallets that can claim — QR auto-locks when full |
@@ -66,7 +56,7 @@
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ```mermaid
 graph TD
@@ -106,11 +96,11 @@ graph TD
     G -->|Update claims| K
     H -->|Query by creator| K
     I -->|Fetch NFT data| K
-```
+```text
 
 ### Request Flow — Claiming an NFT
 
-```
+```text
 1. Collector scans QR → redirected to /claim?id=<nft_id>
 2. Frontend triggers social login → Thirdweb creates smart wallet
 3. POST /api/claimNFT { id, address, password? }
@@ -118,14 +108,14 @@ graph TD
 5. Thirdweb SDK mints ERC-1155 to collector's wallet (gasless, backend-signed)
 6. Prisma updates: claimsCount++, minted flag, owner address, txHash
 7. Frontend shows confetti + transaction link to BaseScan
-```
+```text
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer | Technology | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **Framework** | [Next.js 14](https://nextjs.org/) (App Router) | SSR, API routes, file-based routing |
 | **Language** | [TypeScript 5](https://www.typescriptlang.org/) | End-to-end type safety |
 | **Web3** | [Thirdweb SDK v5](https://thirdweb.com/) | Smart wallets, contract interactions, gasless transactions |
@@ -144,21 +134,23 @@ graph TD
 
 ---
 
-## 📊 Performance Benchmarks
+## Performance Benchmarks
 
 The application is optimized for the **Base Network** to ensure sub-second interactions and minimal bundle footprints.
 
 ### Build Metrics
+
 | Metric | Value |
-|:---|:---|
+| :--- | :--- |
 | Build Time | ~45.2s (optimized production build) |
 | First Load JS (Shared) | 102 kB (Gzipped) |
 | Dashboard Route | 124 kB |
 | Prisma Client Generation | 57ms |
 
 ### Network & UX
+
 | Metric | Value |
-|:---|:---|
+| :--- | :--- |
 | QR Decoding Speed | < 200ms |
 | Social Login Latency | ~1.2s (wallet creation + auth) |
 | Transaction Confirmation | ~450ms (Base Sepolia average) |
@@ -168,9 +160,9 @@ The application is optimized for the **Base Network** to ensure sub-second inter
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
-```
+```text
 phygital/
 ├── .github/                    # GitHub templates (issues, PRs)
 │   ├── ISSUE_TEMPLATE/
@@ -225,11 +217,11 @@ phygital/
 ├── SECURITY.md
 ├── CHANGELOG.md
 └── LICENSE                     # MIT License
-```
+```text
 
 ---
 
-## 🔒 Security
+## Security
 
 This project implements several layers of security hardening:
 
@@ -244,12 +236,12 @@ For full details, see [`SECURITY.md`](./SECURITY.md).
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 | Tool | Version | Purpose |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | [Node.js](https://nodejs.org/) | 18+ | Runtime |
 | [Docker](https://www.docker.com/) | Latest | Local database services |
 | [Thirdweb Account](https://thirdweb.com/) | — | Client ID & Secret Key |
@@ -260,13 +252,13 @@ For full details, see [`SECURITY.md`](./SECURITY.md).
 ```bash
 git clone https://github.com/trigno1/phygital-nft-platform.git
 cd phygital-nft-platform
-```
+```text
 
 ### 2. Install Dependencies
 
 ```bash
 npm install
-```
+```text
 
 ### 3. Configure Environment Variables
 
@@ -293,13 +285,13 @@ ENCRYPTION_PASSWORD="your_strong_password"
 # Local Services (optional)
 REDIS_URL="redis://localhost:6379"
 POSTGRES_CONNECTION_URL="postgresql://engine:engine@localhost:5432/engine"
-```
+```text
 
 ### 4. Start Local Services (Optional)
 
 ```bash
 docker-compose up -d
-```
+```text
 
 This spins up PostgreSQL 15 and Redis 7 containers for local development.
 
@@ -308,22 +300,22 @@ This spins up PostgreSQL 15 and Redis 7 containers for local development.
 ```bash
 npx prisma generate
 npm run dev
-```
+```text
 
-The app will be live at **http://localhost:3000** 🎉
+The app will be live at <http://localhost:3000> 🎉
 
 ### 6. Seed Test Data (Optional)
 
 ```bash
 npm run seed
-```
+```text
 
 ---
 
-## 🧪 Available Scripts
+## Available Scripts
 
 | Command | Description |
-|:---|:---|
+| :--- | :--- |
 | `npm run dev` | Start Next.js development server |
 | `npm run build` | Generate Prisma client + production build |
 | `npm run start` | Start production server |
@@ -332,7 +324,7 @@ npm run seed
 
 ---
 
-## 🗄️ Data Model
+## Data Model
 
 The core NFT schema (defined in `prisma/schema.prisma`) with MongoDB:
 
@@ -360,14 +352,14 @@ model NFT {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
-```
+```text
 
 ---
 
-## 🌐 API Reference
+## API Reference
 
 | Method | Endpoint | Auth | Description |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | `POST` | `/api/create-nft` | ✅ Signature | Create a new NFT drop with metadata and QR code |
 | `POST` | `/api/claimNFT` | ❌ Public | Claim (mint) an NFT to a wallet address |
 | `GET` | `/api/nft/[id]` | ❌ Public | Fetch public NFT metadata by ID |
@@ -376,7 +368,7 @@ model NFT {
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please read the [Contributing Guide](./CONTRIBUTING.md) before submitting a PR.
 
@@ -390,20 +382,20 @@ Contributions are welcome! Please read the [Contributing Guide](./CONTRIBUTING.m
 
 ---
 
-## 📜 License
+## License
 
 Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for details.
 
-```
+```text
 MIT License — Copyright (c) 2026 Tanish Sunita Pareek
-```
+```text
 
 ---
 
-## 📄 Documentation
+## Documentation
 
 | Document | Description |
-|:---|:---|
+| :--- | :--- |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to contribute, code style, and PR process |
 | [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) | Community standards (Contributor Covenant) |
 | [`SECURITY.md`](./SECURITY.md) | Vulnerability reporting policy |
@@ -412,15 +404,14 @@ MIT License — Copyright (c) 2026 Tanish Sunita Pareek
 
 ---
 
-<div align="center">
+---
 
-  ## 👨‍💻 Developed By
+## Developed By
 
-  **Tanish Sunita Pareek** · *Full-Stack & Web3 Developer*
+**Tanish Sunita Pareek** · *Full-Stack & Web3 Developer*
 
-  <a href="https://github.com/trigno1"><img src="https://img.shields.io/badge/GitHub-trigno1-181717?style=for-the-badge&logo=github&logoColor=white" /></a>&nbsp;
-  <a href="https://www.linkedin.com/in/tanish-sunita-pareek/"><img src="https://img.shields.io/badge/LinkedIn-Tanish%20Sunita%20Pareek-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+[![GitHub](https://img.shields.io/badge/GitHub-trigno1-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/trigno1)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Tanish%20Sunita%20Pareek-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/tanish-sunita-pareek/)
 
-  Built with ❤️ for the Phygital Future · ⭐ **Star this repo** if you found it useful!
+Built with ❤️ for the Phygital Future · ⭐ **Star this repo** if you found it useful!
 
-</div>
