@@ -12,17 +12,30 @@ export async function GET(request: Request) {
     orderBy: { createdAt: "desc" },
   });
 
-  const enriched = await Promise.all(
-    profiles.map(async (profile) => {
-      const [dropsCreated, claimsReceived] = await Promise.all([
-        prisma.nFT.count({ where: { creatorAddress: profile.address } }),
-        prisma.claimRecord.count({
-          where: { walletAddress: profile.address.toLowerCase() },
-        }),
-      ]);
-      return { profile, dropsCreated, claimsReceived };
-    })
+  const [dropCounts, claimCounts] = await Promise.all([
+    prisma.nFT.groupBy({
+      by: ["creatorAddress"],
+      _count: { id: true },
+      where: { creatorAddress: { not: null } },
+    }),
+    prisma.claimRecord.groupBy({
+      by: ["walletAddress"],
+      _count: { id: true },
+    }),
+  ]);
+
+  const dropMap = new Map(
+    dropCounts.map((r) => [r.creatorAddress!.toLowerCase(), r._count.id])
   );
+  const claimMap = new Map(
+    claimCounts.map((r) => [r.walletAddress.toLowerCase(), r._count.id])
+  );
+
+  const enriched = profiles.map((profile) => ({
+    profile,
+    dropsCreated: dropMap.get(profile.address.toLowerCase()) ?? 0,
+    claimsReceived: claimMap.get(profile.address.toLowerCase()) ?? 0,
+  }));
 
   return NextResponse.json({ users: enriched });
 }

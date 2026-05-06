@@ -32,6 +32,9 @@ export const dictionaries = {
     'stats.assetsLabel': 'Assets Minted',
     'stats.creators': '10K+',
     'stats.creatorsLabel': 'Active Creators',
+    'stats.dropsLabel': 'Total Drops',
+    'stats.claimsLabel': 'NFTs Claimed',
+    'stats.walletsLabel': 'Unique Collectors',
     // Collectors
     'col.badge': 'For Collectors',
     'col.title': "Claim what's yours.",
@@ -153,6 +156,9 @@ export const dictionaries = {
     'stats.assetsLabel': 'मिंटेड एसेट्स',
     'stats.creators': '10K+',
     'stats.creatorsLabel': 'सक्रिय क्रिएटर्स',
+    'stats.dropsLabel': 'कुल ड्रॉप्स',
+    'stats.claimsLabel': 'दावे किए गए NFT',
+    'stats.walletsLabel': 'अद्वितीय कलेक्टर्स',
     // Collectors
     'col.badge': 'कलेक्टरों के लिए',
     'col.title': 'जो आपका है उस पर दावा करें।',
@@ -274,6 +280,9 @@ export const dictionaries = {
     'stats.assetsLabel': 'Actifs créés',
     'stats.creators': '10K+',
     'stats.creatorsLabel': 'Créateurs actifs',
+    'stats.dropsLabel': 'Total des drops',
+    'stats.claimsLabel': 'NFTs réclamés',
+    'stats.walletsLabel': 'Collectionneurs uniques',
     // Collectors
     'col.badge': 'Pour les collectionneurs',
     'col.title': 'Réclamez ce qui vous appartient.',
@@ -395,6 +404,9 @@ export const dictionaries = {
     'stats.assetsLabel': 'تیار کردہ اثاثے',
     'stats.creators': '10K+',
     'stats.creatorsLabel': 'فعال تخلیق کار',
+    'stats.dropsLabel': 'کل ڈراپس',
+    'stats.claimsLabel': 'دعوی کردہ NFTs',
+    'stats.walletsLabel': 'منفرد کلیکٹرز',
     // Collectors
     'col.badge': 'جمع کرنے والوں کے لئے',
     'col.title': 'جو آپ کا ہے اس پر دعویٰ کریں۔',
@@ -516,6 +528,9 @@ export const dictionaries = {
     'stats.assetsLabel': 'Geprägte Assets',
     'stats.creators': '10K+',
     'stats.creatorsLabel': 'Aktive Ersteller',
+    'stats.dropsLabel': 'Gesamte Drops',
+    'stats.claimsLabel': 'Beanspruchte NFTs',
+    'stats.walletsLabel': 'Einzigartige Sammler',
     // Collectors
     'col.badge': 'Für Sammler',
     'col.title': 'Beanspruche, was dir gehört.',

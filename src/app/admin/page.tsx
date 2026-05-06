@@ -4,6 +4,20 @@ import { useActiveAccount } from "thirdweb/react";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
+// Force light mode while admin page is mounted
+function useLightMode() {
+  useEffect(() => {
+    const html = document.documentElement;
+    const had = html.classList.contains("dark");
+    html.classList.remove("dark");
+    html.style.colorScheme = "light";
+    return () => {
+      if (had) html.classList.add("dark");
+      html.style.colorScheme = "";
+    };
+  }, []);
+}
+
 type Tab = "overview" | "drops" | "users" | "claims" | "system";
 
 function timeAgo(d: string) {
@@ -14,9 +28,10 @@ function timeAgo(d: string) {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-function tw(a: string) { return a; }
+
 
 export default function AdminPage() {
+  useLightMode();
   const account = useActiveAccount();
   const [tab, setTab] = useState<Tab>("overview");
   const [stats, setStats] = useState<any>(null);
@@ -315,7 +330,7 @@ export default function AdminPage() {
               <p className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-4">Security Checklist</p>
               <div className="space-y-3">
                 {[
-                  { ok: !!process.env.NEXT_PUBLIC_APP_URL, label: "Rate Limiting (Upstash)", note: process.env.UPSTASH_REDIS_REST_URL ? "Active" : "Inactive — add UPSTASH vars" },
+                  { ok: !!process.env.NEXT_PUBLIC_UPSTASH_CONFIGURED, label: "Rate Limiting (Upstash)", note: process.env.NEXT_PUBLIC_UPSTASH_CONFIGURED ? "Active" : "Inactive — add UPSTASH vars to .env" },
                   { ok: true, label: "Password Hashing (bcrypt)", note: "Active" },
                   { ok: true, label: "Wallet Signature Auth", note: "Active" },
                   { ok: false, label: "Image MIME Validation", note: "⚠ Not yet implemented" },

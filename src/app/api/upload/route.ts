@@ -13,16 +13,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: "Only image files are supported" },
+        { error: "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed." },
         { status: 400 }
       );
     }
 
     // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > MAX_SIZE_BYTES) {
       return NextResponse.json(
         { error: "File size must be under 10MB" },
         { status: 400 }

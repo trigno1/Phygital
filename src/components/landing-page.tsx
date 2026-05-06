@@ -278,11 +278,20 @@ function HeroSection({ handleConnect }: any) {
 /* ── StatsBar (Transition to Dark) ─────────────────────────── */
 function StatsBar() {
   const { t } = useLanguage();
+  const [platformStats, setPlatformStats] = useState({ totalDrops: 0, totalClaims: 0, totalWallets: 0 });
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then(setPlatformStats)
+      .catch(() => {});
+  }, []);
+
   const stats = [
-    { val:t("stats.volume"), label:t("stats.volumeLabel"), icon:Hexagon, color:"text-indigo-600", bg:"bg-indigo-50" },
-    { val:t("stats.assets"), label:t("stats.assetsLabel"), icon:Globe2, color:"text-emerald-600", bg:"bg-emerald-50" },
-    { val:t("stats.creators"), label:t("stats.creatorsLabel"), icon:Diamond, color:"text-blue-600", bg:"bg-blue-50" },
-    { val:"< 30s", label:"Claim Time", icon:Timer, color:"text-fuchsia-600", bg:"bg-fuchsia-50" },
+    { val: `${platformStats.totalDrops}`, label: t("stats.dropsLabel") ?? "Total Drops", icon: Hexagon, color: "text-indigo-600", bg: "bg-indigo-50" },
+    { val: `${platformStats.totalClaims}`, label: t("stats.claimsLabel") ?? "NFTs Claimed", icon: Globe2, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { val: `${platformStats.totalWallets}`, label: t("stats.walletsLabel") ?? "Unique Collectors", icon: Diamond, color: "text-blue-600", bg: "bg-blue-50" },
+    { val: "< 30s", label: "Claim Time", icon: Timer, color: "text-fuchsia-600", bg: "bg-fuchsia-50" },
   ];
   return (
     <section className="relative z-30 pb-24 bg-white">
@@ -309,6 +318,7 @@ function StatsBar() {
     </section>
   );
 }
+
 
 /* ── CollectorsSection (Journey) ── */
 function CollectorsSection() {

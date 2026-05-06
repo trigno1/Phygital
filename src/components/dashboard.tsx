@@ -91,6 +91,11 @@ export function DashboardComponent() {
     if (activeTab === "drops" && account?.address) fetchMyDrops()
   }, [activeTab, account?.address, fetchMyDrops])
 
+  // Pre-fetch drops on mount so the count card is never blank
+  useEffect(() => {
+    if (account?.address) fetchMyDrops()
+  }, [account?.address, fetchMyDrops])
+
   const copyClaimLink = async (id: string) => {
     const url = `${window.location.origin}/claim?id=${id}`
     await navigator.clipboard.writeText(url)
@@ -247,7 +252,13 @@ export function DashboardComponent() {
                         <Wallet className="h-5 w-5 text-black/70" />
                       </div>
                       <span className="text-xs font-bold text-black/40 uppercase tracking-wider">{t("dash.collected")}</span>
-                      <div className="text-5xl font-black text-black tracking-tight mt-1">{ownedNFTs?.length ?? 0}</div>
+                      <div className="text-5xl font-black text-black tracking-tight mt-1">
+                        {isLoadingOwnedNFTs ? (
+                          <div className="h-12 w-16 bg-black/8 rounded-xl animate-pulse" />
+                        ) : (
+                          ownedNFTs?.length ?? 0
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -259,7 +270,13 @@ export function DashboardComponent() {
                         <Activity className="h-5 w-5 text-black/70" />
                       </div>
                       <span className="text-xs font-bold text-black/40 uppercase tracking-wider">{t("dash.drops")}</span>
-                      <div className="text-5xl font-black text-black tracking-tight mt-1">{myDrops.length}</div>
+                      <div className="text-5xl font-black text-black tracking-tight mt-1">
+                        {dropsLoading ? (
+                          <div className="h-12 w-16 bg-black/8 rounded-xl animate-pulse" />
+                        ) : (
+                          myDrops.length
+                        )}
+                      </div>
                     </div>
                   </div>
 

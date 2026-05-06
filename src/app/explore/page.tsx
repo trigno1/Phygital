@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Footer } from "@/components/footer";
@@ -39,6 +39,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [sort, setSort] = useState<"newest" | "mostClaimed" | "expiringSoon">("newest");
 
   useEffect(() => {
     fetch("/api/explore")
@@ -67,6 +68,20 @@ export default function ExplorePage() {
     }
     setFiltered(result);
   }, [search, activeCategory, drops]);
+
+  const displayed = useMemo(() => {
+    const list = [...filtered];
+    if (sort === "newest") {
+      list.sort((a, b) => new Date(b.expiresAt ?? 0).getTime() - new Date(a.expiresAt ?? 0).getTime());
+    } else if (sort === "mostClaimed") {
+      list.sort((a, b) => (b.claimsCount ?? 0) - (a.claimsCount ?? 0));
+    } else if (sort === "expiringSoon") {
+      return list
+        .filter((d) => d.expiresAt)
+        .sort((a, b) => new Date(a.expiresAt!).getTime() - new Date(b.expiresAt!).getTime());
+    }
+    return list;
+  }, [filtered, sort]);
 
   const getImageSrc = (image: string) =>
     image?.startsWith("ipfs://")
@@ -160,6 +175,17 @@ export default function ExplorePage() {
               {cat}
             </button>
           ))}
+          <div className="ml-auto flex-shrink-0">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as typeof sort)}
+              className="text-xs px-3 py-2 rounded-xl border border-black/10 bg-white focus:outline-none cursor-pointer"
+            >
+              <option value="newest">Newest</option>
+              <option value="mostClaimed">Most claimed</option>
+              <option value="expiringSoon">Expiring soon</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -169,8 +195,8 @@ export default function ExplorePage() {
         {!loading && drops.length > 0 && (
           <div className="flex items-center gap-6 mb-8 text-sm text-stone-500 font-medium">
             <span>
-              <span className="font-bold text-stone-900 text-lg">{filtered.length}</span>{" "}
-              {filtered.length === 1 ? "drop" : "drops"} found
+              <span className="font-bold text-stone-900 text-lg">{displayed.length}</span>{" "}
+              {displayed.length === 1 ? "drop" : "drops"} found
             </span>
             {activeCategory !== "All" && (
               <span className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold border border-indigo-100">
@@ -194,22 +220,22 @@ export default function ExplorePage() {
               </div>
             ))}
           </div>
-        ) : filtered.length === 0 ? (
+        ) : displayed.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="bg-indigo-50 p-5 rounded-full mb-6">
               <Sparkles className="h-10 w-10 text-indigo-400" />
             </div>
             <h2 className="text-2xl font-bold text-stone-900 mb-3">
-              {search || activeCategory !== "All" ? "No drops match your search" : "No drops available yet"}
+              {search || activeCategory !== "All" || sort === "expiringSoon" ? "No drops match your search" : "No drops available yet"}
             </h2>
             <p className="text-stone-500 max-w-sm">
-              {search || activeCategory !== "All"
+              {search || activeCategory !== "All" || sort === "expiringSoon"
                 ? "Try clearing your filters or adjusting your search."
                 : "Check back soon — creators are deploying new drops."}
             </p>
             {(search || activeCategory !== "All") && (
               <button
-                onClick={() => { setSearch(""); setActiveCategory("All"); }}
+                onClick={() => { setSearch(""); setActiveCategory("All"); setSort("newest"); }}
                 className="mt-6 flex items-center gap-2 text-indigo-600 font-semibold text-sm hover:text-indigo-700"
               >
                 <X className="h-4 w-4" /> Clear filters
@@ -218,7 +244,7 @@ export default function ExplorePage() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {filtered.map((drop) => {
+            {displayed.map((drop) => {
               const timeLeft = getTimeLeft(drop.expiresAt);
               const claimsPct =
                 drop.maxClaims
