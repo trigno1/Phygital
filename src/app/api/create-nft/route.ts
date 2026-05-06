@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
 import { verifyAuth } from "@/lib/auth-helper";
 import { generateBrandedQR } from "@/lib/branded-qr";
+import { sendEmail } from "@/lib/email";
+import { dropCreatedEmail, passwordDropEmail } from "@/lib/email-templates";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +85,39 @@ export async function POST(request: Request) {
         color: { dark: "#1e1b4b", light: "#ffffff" },
         width: 512,
       });
+    }
+
+    if (creatorAddress) {
+      const creator = await prisma.userProfile.findUnique({
+        where: { address: creatorAddress.toLowerCase() }
+      });
+      if (creator?.email) {
+        // Send email non-blocking
+        sendEmail({
+          to: creator.email,
+          subject: `Your drop "${nft.name}" is live`,
+          html: dropCreatedEmail({
+            dropName: nft.name,
+            image: nft.image,
+            claimUrl,
+            maxClaims: nft.maxClaims ?? undefined,
+            expiresAt: nft.expiresAt?.toISOString(),
+            hasPassword: !!password,
+          }),
+        }).catch(console.error);
+        
+        if (password) {
+          sendEmail({
+            to: creator.email,
+            subject: `Secret code for "${nft.name}"`,
+            html: passwordDropEmail({
+              dropName: nft.name,
+              password: password,
+              claimUrl,
+            }),
+          }).catch(console.error);
+        }
+      }
     }
 
     return NextResponse.json({ id: nft.id, qrDataUrl, claimUrl });

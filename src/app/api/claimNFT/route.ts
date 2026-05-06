@@ -11,6 +11,8 @@ import { baseSepolia } from "thirdweb/chains";
 import { privateKeyToAccount } from "thirdweb/wallets";
 import { mintTo } from "thirdweb/extensions/erc1155";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
+import { sendEmail } from "@/lib/email";
+import { dropClaimedCreatorEmail, claimSuccessEmail, dropFullyClaimedEmail } from "@/lib/email-templates";
 
 export const dynamic = "force-dynamic";
 
@@ -185,6 +187,64 @@ export async function POST(request: Request) {
         },
       }),
     ]);
+
+    // Fire emails non-blocking
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sem-project-5.vercel.app";
+    const explorerBase = "https://sepolia.basescan.org/tx";
+
+    const emailJobs = [];
+
+    if (updated.creatorAddress) {
+      const creator = await prisma.userProfile.findUnique({
+        where: { address: updated.creatorAddress.toLowerCase() }
+      });
+      if (creator?.email) {
+        emailJobs.push(sendEmail({
+          to: creator.email,
+          subject: `New claim on "${updated.name}"`,
+          html: dropClaimedCreatorEmail({
+            dropName: updated.name,
+            claimerAddress: address.toLowerCase(),
+            txHash: txHash,
+            totalClaims: updated.claimsCount,
+            maxClaims: updated.maxClaims ?? undefined,
+            dashboardUrl: `${appUrl}/dashboard`,
+          }),
+        }));
+        
+        if (updated.maxClaims !== null && updated.claimsCount >= updated.maxClaims) {
+          emailJobs.push(sendEmail({
+            to: creator.email,
+            subject: `"${updated.name}" is fully claimed!`,
+            html: dropFullyClaimedEmail({
+              dropName: updated.name,
+              totalClaims: updated.claimsCount,
+              totalScans: updated.scansCount,
+              dashboardUrl: `${appUrl}/dashboard`,
+            }),
+          }));
+        }
+      }
+    }
+
+    const claimer = await prisma.userProfile.findUnique({
+      where: { address: address.toLowerCase() }
+    });
+    if (claimer?.email) {
+      emailJobs.push(sendEmail({
+        to: claimer.email,
+        subject: `You claimed "${updated.name}"`,
+        html: claimSuccessEmail({
+          dropName: updated.name,
+          image: updated.image,
+          txHash: txHash,
+          explorerUrl: `${explorerBase}/${txHash}`,
+          appUrl,
+        }),
+      }));
+    }
+
+    Promise.all(emailJobs).catch(console.error);
 
     return NextResponse.json({ success: true, nft: updated, txHash });
   } catch (error) {

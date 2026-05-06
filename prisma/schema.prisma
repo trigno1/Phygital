@@ -30,6 +30,7 @@ model NFT {
   isSoulbound Boolean   @default(false)
   isPublic    Boolean   @default(false)
   externalUrl String?
+  reminderSent Boolean  @default(false)
 }
 
 model ClaimRecord {
@@ -55,6 +56,7 @@ model UserProfile {
   instagram String?
   twitter   String?
   website   String?
+  email     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

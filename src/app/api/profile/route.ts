@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyAuth } from "@/lib/auth-helper";
 import { ErrorCode, errorResponse } from "@/lib/error-handler";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmail } from "@/lib/email-templates";
 
 export const dynamic = "force-dynamic";
 
 const ALLOWED_FIELDS = [
   "name", "bio", "location", "phone", "avatarUrl",
-  "github", "linkedin", "instagram", "twitter", "website",
+  "github", "linkedin", "instagram", "twitter", "website", "email"
 ];
 
 /**
@@ -73,6 +75,14 @@ export async function PUT(request: Request) {
       update: sanitized,
       create: { address: address.toLowerCase(), ...sanitized },
     });
+
+    if (profile.email) {
+      await sendEmail({
+        to: profile.email,
+        subject: "Welcome to Stamp",
+        html: welcomeEmail({ name: profile.name }),
+      });
+    }
 
     return NextResponse.json({ success: true, profile });
   } catch (error) {
