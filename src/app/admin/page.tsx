@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
+import { ConnectButton } from "thirdweb/react";
+import { createThirdwebClient } from "thirdweb";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
@@ -75,7 +77,19 @@ export default function AdminPage() {
     setDeleting(null);
   }
 
-  if (!account) return <div className="flex items-center justify-center min-h-screen text-stone-500">Connect your wallet to access admin.</div>;
+  if (!account) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-stone-50 gap-6">
+      <div className="flex items-center gap-2 mb-2">
+        <ShieldCheck className="h-7 w-7 text-indigo-600" />
+        <span className="text-xl font-black text-stone-900">Admin Panel</span>
+      </div>
+      <p className="text-stone-500 text-sm mb-2">Connect your admin wallet to continue</p>
+      <ConnectButton
+        client={createThirdwebClient({ clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID! })}
+      />
+      <Link href="/" className="text-xs text-stone-400 hover:text-stone-600 mt-4">← Back to home</Link>
+    </div>
+  );
   if (!isAdmin) return <div className="flex items-center justify-center min-h-screen text-red-500 font-bold">Access Denied — Not an admin wallet.</div>;
   if (loading) return <div className="flex items-center justify-center min-h-screen text-stone-400">Loading admin data…</div>;
 
@@ -333,7 +347,7 @@ export default function AdminPage() {
                   { ok: !!process.env.NEXT_PUBLIC_UPSTASH_CONFIGURED, label: "Rate Limiting (Upstash)", note: process.env.NEXT_PUBLIC_UPSTASH_CONFIGURED ? "Active" : "Inactive — add UPSTASH vars to .env" },
                   { ok: true, label: "Password Hashing (bcrypt)", note: "Active" },
                   { ok: true, label: "Wallet Signature Auth", note: "Active" },
-                  { ok: false, label: "Image MIME Validation", note: "⚠ Not yet implemented" },
+                  { ok: true, label: "Image MIME Validation", note: "Active — jpeg/png/gif/webp only" },
                   { ok: false, label: "Test Coverage", note: "⚠ No test files found" },
                 ].map(item => (
                   <div key={item.label} className="flex items-start gap-3">
