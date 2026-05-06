@@ -181,6 +181,13 @@ export function DashboardComponent() {
                     <QrCode className="h-4 w-4" /> <span className="hidden sm:inline">{t("nav.create")}</span>
                   </button>
                 </Link>
+                {account?.address?.toLowerCase() === (process.env.NEXT_PUBLIC_ADMIN_WALLET_ADDRESS ?? "").toLowerCase() && (
+                  <Link href="/admin">
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-all border border-indigo-100">
+                      <ShieldCheck className="h-4 w-4" /> <span className="hidden sm:inline">Admin</span>
+                    </button>
+                  </Link>
+                )}
                 <button onClick={() => { if (wallet) disconnect(wallet); toast.success("Signed out successfully") }}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-black/40 hover:text-red-500 hover:bg-red-50 rounded-full transition-all border border-transparent hover:border-red-100">
                   <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">{t("nav.signOut")}</span>
