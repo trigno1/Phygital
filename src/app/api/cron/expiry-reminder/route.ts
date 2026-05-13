@@ -38,15 +38,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ── Find drops expiring in the next 23–24 hours ───────────
-  // Using a 1-hour window ensures each drop only matches once
-  // (since the cron runs every hour)
-  const in24h = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const in23h = new Date(Date.now() + 23 * 60 * 60 * 1000);
+  // ── Find drops expiring in the next 48 hours ──────────────
+  // Since the cron only runs once per day (Hobby plan limit),
+  // we use a 48-hour window to ensure no drops are missed.
+  // The reminderSent flag prevents duplicate emails.
+  const in48h = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
   const drops = await prisma.nFT.findMany({
     where: {
-      expiresAt: { gte: in23h, lte: in24h }, // Expires in 23–24 hours
+      expiresAt: { gte: new Date(), lte: in48h }, // Expires within next 48 hours
       reminderSent: false,                    // Haven't sent a reminder yet
       creatorAddress: { not: null },          // Has a creator to notify
     },
