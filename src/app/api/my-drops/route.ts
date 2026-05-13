@@ -64,7 +64,7 @@ export async function GET(request: Request) {
       code: ErrorCode.INTERNAL,
       message: "An encrypted server error occurred while fetching your drops",
       status: 500,
-      details: error,
+      details: error instanceof Error ? error.message : "Internal error",
     });
   }
 }

@@ -99,7 +99,7 @@ export async function GET(request: Request) {
       code: ErrorCode.INTERNAL,
       message: "Failed to regenerate QR code",
       status: 500,
-      details: error,
+      details: error instanceof Error ? error.message : "Internal error",
     });
   }
 }

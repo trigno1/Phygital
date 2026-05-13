@@ -63,6 +63,33 @@ export async function POST(request: Request) {
       });
     }
 
+    // FIX 5: Input length validation to prevent oversized payloads
+    const NAME_MAX = 100;
+    const DESC_MAX = 1000;
+    const URL_MAX = 500;
+
+    if (name?.length > NAME_MAX) {
+      return errorResponse({
+        code: ErrorCode.VALIDATION,
+        message: `Name must be ${NAME_MAX} characters or fewer`,
+        status: 400,
+      });
+    }
+    if (description?.length > DESC_MAX) {
+      return errorResponse({
+        code: ErrorCode.VALIDATION,
+        message: `Description must be ${DESC_MAX} characters or fewer`,
+        status: 400,
+      });
+    }
+    if (externalUrl && externalUrl.length > URL_MAX) {
+      return errorResponse({
+        code: ErrorCode.VALIDATION,
+        message: `External URL must be ${URL_MAX} characters or fewer`,
+        status: 400,
+      });
+    }
+
     // ── Authenticate: verify the wallet signature ───────────
     // Ensures the caller actually owns the creatorAddress wallet
     const auth = await verifyAuth(request, creatorAddress);
@@ -162,7 +189,7 @@ export async function POST(request: Request) {
       code: ErrorCode.INTERNAL,
       message: "An encrypted server error occurred while creating the NFT",
       status: 500,
-      details: error,
+      details: error instanceof Error ? error.message : "Internal error",
     });
   }
 }

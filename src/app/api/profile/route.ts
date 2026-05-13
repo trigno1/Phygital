@@ -70,7 +70,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ profile: profile ?? null });
   } catch (error) {
-    return errorResponse({ code: ErrorCode.INTERNAL, message: "Failed to fetch profile", status: 500, details: error });
+    return errorResponse({ code: ErrorCode.INTERNAL, message: "Failed to fetch profile", status: 500, details: error instanceof Error ? error.message : "Internal error" });
   }
 }
 
@@ -112,17 +112,17 @@ export async function PUT(request: Request) {
       create: { address: address.toLowerCase(), ...sanitized },
     });
 
-    // Send a welcome email if the user has provided their email
+    // Send a welcome email if the user has provided their email (non-blocking)
     if (profile.email) {
-      await sendEmail({
+      sendEmail({
         to: profile.email,
         subject: "Welcome to Stamp",
         html: welcomeEmail({ name: profile.name }),
-      });
+      }).catch(console.error);
     }
 
     return NextResponse.json({ success: true, profile });
   } catch (error) {
-    return errorResponse({ code: ErrorCode.INTERNAL, message: "Failed to save profile", status: 500, details: error });
+    return errorResponse({ code: ErrorCode.INTERNAL, message: "Failed to save profile", status: 500, details: error instanceof Error ? error.message : "Internal error" });
   }
 }

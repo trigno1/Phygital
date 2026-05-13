@@ -59,6 +59,7 @@ export function DashboardComponent() {
   const [dropsLoading, setDropsLoading] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [qrLoadingId, setQrLoadingId] = useState<string | null>(null)
+  const [isAdminEmail, setIsAdminEmail] = useState(false)
 
   const { data: ownedNFTs, isLoading: isLoadingOwnedNFTs } = useReadContract(
     getOwnedNFTs,
@@ -95,6 +96,32 @@ export function DashboardComponent() {
   useEffect(() => {
     if (account?.address) fetchMyDrops()
   }, [account?.address, fetchMyDrops])
+
+  // Fetch user profile on mount to check admin email visibility
+  useEffect(() => {
+    async function checkAdminEmail() {
+      if (!account?.address) { setIsAdminEmail(false); return }
+      try {
+        const message = `Authorize Phygital Access for ${account.address}`
+        const signature = await account.signMessage({ message })
+        const res = await fetch(`/api/profile?address=${account.address}`, {
+          headers: { "x-signature": signature, "x-address": account.address },
+        })
+        if (!res.ok) { setIsAdminEmail(false); return }
+        const data = await res.json()
+        const profile = data.profile
+        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL ?? ""
+        if (adminEmail && profile?.email?.toLowerCase() === adminEmail.toLowerCase()) {
+          setIsAdminEmail(true)
+        } else {
+          setIsAdminEmail(false)
+        }
+      } catch {
+        setIsAdminEmail(false)
+      }
+    }
+    checkAdminEmail()
+  }, [account?.address])
 
   const copyClaimLink = async (id: string) => {
     const url = `${window.location.origin}/claim?id=${id}`
@@ -186,7 +213,7 @@ export function DashboardComponent() {
                     <QrCode className="h-4 w-4" /> <span className="hidden sm:inline">{t("nav.create")}</span>
                   </button>
                 </Link>
-                {account?.address?.toLowerCase() === (process.env.NEXT_PUBLIC_ADMIN_WALLET_ADDRESS ?? "").toLowerCase() && (
+                {isAdminEmail && (
                   <Link href="/admin">
                     <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 rounded-full transition-all border border-indigo-100">
                       <ShieldCheck className="h-4 w-4" /> <span className="hidden sm:inline">Admin</span>

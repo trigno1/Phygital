@@ -58,6 +58,16 @@ export async function POST(request: Request) {
       });
     }
 
+    // FIX 6: Validate wallet address format (must be a valid Ethereum address)
+    const ETH_ADDRESS_REGEX = /^0x[0-9a-fA-F]{40}$/;
+    if (!ETH_ADDRESS_REGEX.test(address)) {
+      return errorResponse({
+        code: ErrorCode.VALIDATION,
+        message: "Invalid wallet address format",
+        status: 400,
+      });
+    }
+
     // ── Step 1: Fetch the NFT drop from the database ────────
     const existing = await prisma.nFT.findUnique({ where: { id } });
 
@@ -232,7 +242,11 @@ export async function POST(request: Request) {
 
     // ── Step 10: Send email notifications (non-blocking) ────
     // Emails are fire-and-forget — they should never delay the response
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sem-project-5.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) {
+      console.error("[claimNFT] NEXT_PUBLIC_APP_URL is not set");
+    }
+    const baseUrl = appUrl ?? "";
     const explorerBase = "https://sepolia.basescan.org/tx";
 
     const emailJobs = [];
@@ -252,7 +266,7 @@ export async function POST(request: Request) {
             txHash: txHash,
             totalClaims: updated.claimsCount,
             maxClaims: updated.maxClaims ?? undefined,
-            dashboardUrl: `${appUrl}/dashboard`,
+            dashboardUrl: `${baseUrl}/dashboard`,
           }),
         }));
         
@@ -265,7 +279,7 @@ export async function POST(request: Request) {
               dropName: updated.name,
               totalClaims: updated.claimsCount,
               totalScans: updated.scansCount,
-              dashboardUrl: `${appUrl}/dashboard`,
+              dashboardUrl: `${baseUrl}/dashboard`,
             }),
           }));
         }
@@ -285,7 +299,7 @@ export async function POST(request: Request) {
           image: updated.image,
           txHash: txHash,
           explorerUrl: `${explorerBase}/${txHash}`,
-          appUrl,
+          appUrl: baseUrl,
         }),
       }));
     }
@@ -300,7 +314,7 @@ export async function POST(request: Request) {
       code: ErrorCode.INTERNAL,
       message: "An encrypted server error occurred",
       status: 500,
-      details: error,
+      details: error instanceof Error ? error.message : "Internal error",
     });
   }
 }
