@@ -1,62 +1,98 @@
+// ============================================================
+// Prisma Schema — Phygital NFT Platform Database
+// ============================================================
+//
+// This file defines the MongoDB database structure for the
+// Stamp (Phygital) NFT platform. It contains three models:
+//   1. NFT          — NFT drops created by users
+//   2. ClaimRecord  — Tracks who claimed which drop (prevents duplicates)
+//   3. UserProfile  — User profiles linked to wallet addresses
+//
+// AFTER EDITING: Run these commands to apply changes:
+//   npx prisma db push     → Push schema to MongoDB
+//   npx prisma generate    → Regenerate the TypeScript client
+//
+// DATABASE: MongoDB (NoSQL document database)
+// ORM: Prisma (type-safe database client for TypeScript)
+// ============================================================
+
+// Prisma Client generator — produces the TypeScript client
+// that provides type-safe database queries
 generator client {
   provider = "prisma-client-js"
 }
 
+// MongoDB connection — uses the DATABASE_URL from .env
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+// ──────────────────────────────────────────────────────────────
+// NFT Model — Represents a single NFT drop (the "stamp")
+// ──────────────────────────────────────────────────────────────
+// Each drop is a template that can be claimed by multiple wallets.
+// The actual on-chain minting happens via /api/claimNFT.
 model NFT {
-  id          String    @id @default(cuid()) @map("_id")
-  name        String
-  description String
-  minted      Boolean   @default(false)
-  image       String
-  owner       String?
-  creatorAddress String?
-  txHash      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  attributes  Json?
-  qrPath      String?
-  category    String?
-  expiresAt   DateTime?
-  issuedAt    DateTime?
-  maxClaims   Int?
-  claimsCount Int       @default(0)
-  scansCount  Int       @default(0)
-  password    String?
-  isSoulbound Boolean   @default(false)
-  isPublic    Boolean   @default(false)
-  externalUrl String?
-  reminderSent Boolean  @default(false)
+  id             String    @id @default(cuid()) @map("_id")  // Unique drop ID (MongoDB _id)
+  name           String                                       // Display name of the drop
+  description    String                                       // Description shown on claim page
+  minted         Boolean   @default(false)                    // True when fully claimed (legacy single-claim flag)
+  image          String                                       // IPFS URI of the drop image
+  owner          String?                                      // Last claimer's wallet (legacy field)
+  creatorAddress String?                                      // Wallet address of the drop creator
+  txHash         String?                                      // Last mint transaction hash
+  createdAt      DateTime  @default(now())                    // When the drop was created
+  updatedAt      DateTime  @updatedAt                         // Auto-updated on any change
+  attributes     Json?                                        // Custom metadata (key-value pairs)
+  qrPath         String?                                      // Legacy: local QR file path
+  category       String?                                      // Category tag (e.g., "Event", "Art")
+  expiresAt      DateTime?                                    // Optional: drop stops accepting claims after this
+  issuedAt       DateTime?                                    // Optional: drop becomes claimable after this
+  maxClaims      Int?                                         // Max number of claims (null = unlimited)
+  claimsCount    Int       @default(0)                        // Current number of successful claims
+  scansCount     Int       @default(0)                        // Number of QR code / link views
+  password       String?                                      // Bcrypt hash of the claim password (null = public)
+  isSoulbound    Boolean   @default(false)                    // If true, NFT cannot be transferred after claim
+  isPublic       Boolean   @default(false)                    // If true, appears on the /explore page
+  externalUrl    String?                                      // Optional link to external resource
+  reminderSent   Boolean   @default(false)                    // True after expiry reminder email is sent
 }
 
+// ──────────────────────────────────────────────────────────────
+// ClaimRecord — Tracks individual claims per wallet per drop
+// ──────────────────────────────────────────────────────────────
+// Used to prevent duplicate claims (each wallet can only claim
+// a drop once) and to power the admin dashboard claims feed.
 model ClaimRecord {
-  id            String   @id @default(cuid()) @map("_id")
-  dropId        String
-  walletAddress String
-  txHash        String?
-  claimedAt     DateTime @default(now())
+  id            String   @id @default(cuid()) @map("_id")    // Unique claim ID
+  dropId        String                                        // References the NFT drop
+  walletAddress String                                        // Wallet that made the claim
+  txHash        String?                                       // On-chain transaction hash
+  claimedAt     DateTime @default(now())                      // When the claim happened
 
-  @@unique([dropId, walletAddress])
+  @@unique([dropId, walletAddress])                           // Each wallet can only claim a drop ONCE
 }
 
+// ──────────────────────────────────────────────────────────────
+// UserProfile — User identity linked to a wallet address
+// ──────────────────────────────────────────────────────────────
+// Optional — users can interact with the platform without creating
+// a profile. Profiles enable email notifications and personalization.
 model UserProfile {
-  id        String   @id @default(cuid()) @map("_id")
-  address   String   @unique
-  name      String?
-  bio       String?
-  location  String?
-  phone     String?
-  avatarUrl String?
-  github    String?
-  linkedin  String?
-  instagram String?
-  twitter   String?
-  website   String?
-  email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid()) @map("_id")        // Unique profile ID
+  address   String   @unique                                  // Wallet address (one profile per wallet)
+  name      String?                                           // Display name
+  bio       String?                                           // Short bio
+  location  String?                                           // City / country
+  phone     String?                                           // Phone number
+  avatarUrl String?                                           // Profile picture URL
+  github    String?                                           // GitHub username
+  linkedin  String?                                           // LinkedIn profile URL
+  instagram String?                                           // Instagram handle
+  twitter   String?                                           // Twitter/X handle
+  website   String?                                           // Personal website URL
+  email     String?                                           // Email for notifications
+  createdAt DateTime @default(now())                          // When the profile was created
+  updatedAt DateTime @updatedAt                               // Auto-updated on any change
 }

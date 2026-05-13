@@ -1,3 +1,21 @@
+/**
+ * ============================================================
+ * API Route: GET /api/qr?id={dropId}
+ * ============================================================
+ *
+ * Authenticated endpoint — regenerates the QR code for a drop.
+ * Only the creator of the drop can regenerate its QR code.
+ *
+ * USE CASE:
+ * ─────────
+ * If a creator loses their original QR code, they can regenerate
+ * it from the dashboard. The QR always points to the same
+ * /claim?id={dropId} URL.
+ *
+ * Uses the branded QR generator (with logo + drop name) with
+ * a plain QR code as fallback.
+ */
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
@@ -5,15 +23,17 @@ import { ErrorCode, errorResponse } from "@/lib/error-handler";
 import { verifyAuth } from "@/lib/auth-helper";
 import { generateBrandedQR } from "@/lib/branded-qr";
 
+// Disable static caching
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/qr?id={dropId}
- * Authenticated endpoint — regenerates QR code for a drop the caller created.
+ * Authenticated — regenerates QR code for a drop the caller created.
  * Requires x-signature + x-address headers matching the drop's creatorAddress.
  */
 export async function GET(request: Request) {
   try {
+    // Extract the drop ID from the query string
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -25,11 +45,11 @@ export async function GET(request: Request) {
       });
     }
 
-    // Authenticate request
+    // Authenticate the request (verify wallet signature)
     const auth = await verifyAuth(request, null);
     if (!auth.isValid) return auth.response!;
 
-    // Fetch drop
+    // Fetch the drop from the database
     const nft = await prisma.nFT.findUnique({ where: { id } });
 
     if (!nft) {
@@ -40,7 +60,7 @@ export async function GET(request: Request) {
       });
     }
 
-    // Ensure caller is the creator
+    // Ensure the caller is the creator of this drop
     if (
       nft.creatorAddress &&
       auth.address?.toLowerCase() !== nft.creatorAddress.toLowerCase()
@@ -52,18 +72,18 @@ export async function GET(request: Request) {
       });
     }
 
-    // Re-generate QR code
+    // ── Generate the claim URL ──────────────────────────────
     const url = new URL(request.url);
     const origin =
       process.env.NEXT_PUBLIC_APP_URL || `${url.protocol}//${url.host}`;
     const claimUrl = `${origin}/claim?id=${nft.id}`;
 
-    // Generate branded QR card with logo + NFT name
+    // ── Generate branded QR code (with fallback) ────────────
     let qrDataUrl: string;
     try {
       qrDataUrl = await generateBrandedQR(claimUrl, nft.name);
     } catch {
-      // Fallback to raw QR if branded generation fails
+      // Fallback to plain QR if branded generation fails
       qrDataUrl = await QRCode.toDataURL(claimUrl, {
         errorCorrectionLevel: "H",
         type: "image/png",

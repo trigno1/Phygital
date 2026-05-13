@@ -1,26 +1,64 @@
+/**
+ * ============================================================
+ * API Route: POST /api/send-claim-email
+ * ============================================================
+ *
+ * Standalone email endpoint — sends a richly formatted claim
+ * confirmation email to a user after they claim an NFT.
+ *
+ * NOTE: This is a LEGACY endpoint from before the centralized
+ * email system was added. The newer /api/claimNFT route now
+ * sends claim emails automatically using email-templates.ts.
+ * This endpoint still works for manual/external email triggers.
+ *
+ * EMAIL TEMPLATE:
+ * ───────────────
+ * Contains a fully self-contained HTML email with:
+ * - Header with gradient and branding
+ * - NFT image (IPFS → gateway URL conversion)
+ * - Claim details (wallet, date, tx hash)
+ * - CTA buttons (BaseScan verification, dashboard link)
+ * - Footer with blockchain info
+ *
+ * SECURITY:
+ * ─────────
+ * - Basic email format validation
+ * - Requires email, nftName, and txHash fields
+ */
+
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
+// Disable static caching
 export const dynamic = "force-dynamic";
 
+/** Shape of the incoming request body */
 interface ClaimEmailPayload {
-  email: string;
-  nftName: string;
-  nftImage: string;
-  txHash: string;
-  dropId: string;
-  walletAddress: string;
-  claimedAt: string;
+  email: string;         // Recipient's email address
+  nftName: string;       // Name of the claimed NFT
+  nftImage: string;      // IPFS URI of the NFT image
+  txHash: string;        // On-chain transaction hash
+  dropId: string;        // Database ID of the drop
+  walletAddress: string; // Wallet that made the claim
+  claimedAt: string;     // ISO timestamp of the claim
 }
 
+/**
+ * Builds the full HTML email body from the claim data.
+ * Uses inline CSS for maximum email client compatibility
+ * (most email clients strip <style> tags).
+ */
 function buildEmailHtml(payload: ClaimEmailPayload): string {
   const { nftName, nftImage, txHash, dropId, walletAddress, claimedAt } = payload;
 
+  // Build URLs for the email CTAs
   const origin = process.env.NEXT_PUBLIC_APP_URL || "https://phygital.app";
   const baseScanUrl = `https://sepolia.basescan.org/tx/${txHash}`;
   const dashboardUrl = `${origin}/dashboard`;
   const claimUrl = `${origin}/claim?id=${dropId}`;
 
+  // Convert IPFS URI to gateway URL for email rendering
+  // Email clients can't resolve ipfs:// — must use an HTTP gateway
   const imageHtml = nftImage
     ? `<img src="${nftImage.replace("ipfs://", "https://ipfs.io/ipfs/")}" alt="${nftName}" width="200" height="200" style="border-radius:16px;object-fit:cover;display:block;margin:0 auto 24px;" />`
     : "";
@@ -39,7 +77,7 @@ function buildEmailHtml(payload: ClaimEmailPayload): string {
       <td align="center">
         <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
-          <!-- Header -->
+          <!-- Header with gradient background -->
           <tr>
             <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#a855f7 100%);padding:40px 40px 32px;text-align:center;">
               <p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.6);">Phygital NFT Platform</p>
@@ -48,7 +86,7 @@ function buildEmailHtml(payload: ClaimEmailPayload): string {
             </td>
           </tr>
 
-          <!-- Body -->
+          <!-- Body content -->
           <tr>
             <td style="padding:40px;">
 
@@ -60,7 +98,7 @@ function buildEmailHtml(payload: ClaimEmailPayload): string {
                 <p style="margin:0;font-size:22px;font-weight:800;color:#3730a3;letter-spacing:-0.3px;">${nftName}</p>
               </div>
 
-              <!-- Details -->
+              <!-- Claim Details -->
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
                   <td style="padding-bottom:12px;">
@@ -94,7 +132,7 @@ function buildEmailHtml(payload: ClaimEmailPayload): string {
                 </tr>
               </table>
 
-              <!-- Claim Link -->
+              <!-- Original Claim Link -->
               <div style="background:#fafafa;border:1px solid #f0f0f0;border-radius:12px;padding:16px;margin-bottom:8px;">
                 <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;">Original Drop Link</p>
                 <a href="${claimUrl}" style="font-size:12px;color:#4f46e5;font-family:'Courier New',monospace;word-break:break-all;">${claimUrl}</a>
@@ -120,11 +158,17 @@ function buildEmailHtml(payload: ClaimEmailPayload): string {
   `.trim();
 }
 
+/**
+ * POST /api/send-claim-email
+ * Sends a claim confirmation email with full NFT details.
+ */
 export async function POST(request: Request) {
   try {
+    // Parse the claim data from the request body
     const body: ClaimEmailPayload = await request.json();
     const { email, nftName, nftImage, txHash, dropId, walletAddress, claimedAt } = body;
 
+    // Validate required fields
     if (!email || !nftName || !txHash) {
       return NextResponse.json(
         { error: "Missing required fields: email, nftName, txHash" },
@@ -132,18 +176,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Basic email validation
+    // Basic email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 
+    // Build the HTML email from the claim data
     const html = buildEmailHtml({ email, nftName, nftImage, txHash, dropId, walletAddress, claimedAt });
 
+    // Send via Resend API
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "onboarding@resend.dev",  // Resend free tier sender
       to: email,
       subject: `🎉 You claimed "${nftName}" on Phygital!`,
       html,
