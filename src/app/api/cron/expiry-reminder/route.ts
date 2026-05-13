@@ -1,29 +1,61 @@
+/**
+ * ============================================================
+ * API Route: GET /api/cron/expiry-reminder
+ * ============================================================
+ *
+ * Scheduled cron job that sends email reminders to drop creators
+ * when their drops are about to expire (within the next 24 hours).
+ *
+ * SCHEDULE: Runs every hour (configured in vercel.json)
+ *
+ * HOW IT WORKS:
+ * ─────────────
+ * 1. Vercel Cron hits this endpoint every hour with a Bearer token
+ * 2. The route finds all drops expiring in the 23–24 hour window
+ *    that haven't already received a reminder
+ * 3. For each drop, it looks up the creator's email via UserProfile
+ * 4. Sends a "your drop expires in X hours" email
+ * 5. Marks the drop as reminderSent=true to prevent duplicates
+ *
+ * SECURITY:
+ * ─────────
+ * Protected by CRON_SECRET — only Vercel's cron scheduler
+ * (which sends the correct Bearer token) can trigger this.
+ */
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { dropExpiringSoonEmail } from "@/lib/email-templates";
 
+// Disable static caching
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  // ── Auth: Only allow Vercel Cron with the correct secret ──
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // ── Find drops expiring in the next 23–24 hours ───────────
+  // Using a 1-hour window ensures each drop only matches once
+  // (since the cron runs every hour)
   const in24h = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const in23h = new Date(Date.now() + 23 * 60 * 60 * 1000);
 
   const drops = await prisma.nFT.findMany({
     where: {
-      expiresAt: { gte: in23h, lte: in24h },
-      reminderSent: false,
-      creatorAddress: { not: null },
+      expiresAt: { gte: in23h, lte: in24h }, // Expires in 23–24 hours
+      reminderSent: false,                    // Haven't sent a reminder yet
+      creatorAddress: { not: null },          // Has a creator to notify
     },
   });
 
+  // ── Send reminder emails ──────────────────────────────────
   let sent = 0;
   for (const drop of drops) {
+    // Look up the creator's email from their profile
     const creator = await prisma.userProfile.findUnique({
       where: { address: drop.creatorAddress! },
     });
@@ -39,6 +71,7 @@ export async function GET(request: Request) {
           dropUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
         }),
       });
+      // Mark as sent to prevent duplicate reminders
       await prisma.nFT.update({
         where: { id: drop.id },
         data: { reminderSent: true },
@@ -47,5 +80,6 @@ export async function GET(request: Request) {
     }
   }
 
+  // Return the count of emails sent (useful for monitoring)
   return NextResponse.json({ sent });
 }

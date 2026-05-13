@@ -1,29 +1,52 @@
+/**
+ * ============================================================
+ * API Route: GET /api/explore
+ * ============================================================
+ *
+ * Public endpoint — no authentication required.
+ * Returns all active NFT drops that creators have marked as public.
+ *
+ * FILTERING LOGIC:
+ * ────────────────
+ * A drop appears on the explore page only if ALL of these are true:
+ *   ✅ isPublic = true        (creator opted in)
+ *   ✅ Not expired             (expiresAt is null or in the future)
+ *   ✅ Already live             (issuedAt is null or in the past)
+ *   ✅ Not fully claimed        (claimsCount < maxClaims, or maxClaims is null)
+ *
+ * SENSITIVE FIELDS:
+ * ─────────────────
+ * The `password` and `creatorAddress` fields are NOT included
+ * in the select clause to prevent leaking sensitive data.
+ */
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Disable static caching — drop availability changes in real time
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/explore
- * Public endpoint — returns active NFT drops that creators chose to display publicly.
- * Only drops with isPublic=true are shown. Also filters: not expired, not fully claimed, already live.
+ * Returns all publicly visible, active, claimable NFT drops.
  */
 export async function GET() {
   try {
     const now = new Date();
 
+    // Fetch all public drops that are currently live and not expired
     const drops = await prisma.nFT.findMany({
       where: {
-        isPublic: true,           // only creator-approved public drops
+        isPublic: true,           // Only creator-approved public drops
         OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: now } },
+          { expiresAt: null },     // No expiry set
+          { expiresAt: { gt: now } }, // Or hasn't expired yet
         ],
         AND: [
           {
             OR: [
-              { issuedAt: null },
-              { issuedAt: { lte: now } },
+              { issuedAt: null },     // No start date set
+              { issuedAt: { lte: now } }, // Or already past the start date
             ],
           },
         ],
@@ -41,11 +64,12 @@ export async function GET() {
         issuedAt: true,
         isSoulbound: true,
         createdAt: true,
+        // Note: password and creatorAddress are intentionally excluded
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "desc" }, // Newest first
     });
 
-    // Filter out fully-claimed drops
+    // Filter out drops that have been fully claimed
     const available = drops.filter(
       (d) => d.maxClaims === null || d.claimsCount < d.maxClaims
     );
